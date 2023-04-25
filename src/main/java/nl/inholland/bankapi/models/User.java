@@ -17,7 +17,7 @@ public class User {
     private double transactionLimit;
     private Role role;
 
-    enum Role {
+    public enum Role {
         CUSTOMER,
         EMPLOYEE
     }

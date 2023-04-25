@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 public class BankAccount {
     private int id;
     private String iban;
-    private String userId;
+    private String userUuid;
     private double absoluteLimit;
     private double balance;
     private AccountType type;
 
-    enum AccountType {
+    public enum AccountType {
         CURRENT,
         SAVINGS
     }
