@@ -26,8 +26,8 @@ public class UserController {
 
     // we will need Get Methods -Beth
 
-    @PostMapping // create/add
-    public ResponseEntity addUser(@RequestBody User user) {
+    @PostMapping
+    public ResponseEntity createUser(@RequestBody User user) {
         return ResponseEntity.status(201).body(
                 Collections.singletonMap("id", userService.addUser(user))
         );
