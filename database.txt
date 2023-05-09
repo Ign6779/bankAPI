@@ -1,0 +1,47 @@
+CREATE TABLE users (
+  uuid VARCHAR(36) PRIMARY KEY,
+  email VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  phone VARCHAR(255) NOT NULL,
+  dayLimit DECIMAL(13,2) NOT NULL,
+  transactionLimit DECIMAL(13,2) NOT NULL,
+  role VARCHAR(255) NOT NULL
+);
+
+INSERT INTO users (uuid, email, name, phone, dayLimit, transactionLimit, role)
+VALUES
+  ('1cfc38d6-e378-11ed-b5ea-0242ac120002', 'user1@email.com', 'Dude', '+31000000000', 99.9, 99.9, 'EMPLOYEE'),
+  ('1cfc3ea8-e378-11ed-b5ea-0242ac120002', 'user2@email.com', 'Lebowski', '+31000000001', 99.9, 99.9, 'CUSTOMER'),
+  ('1cfc409c-e378-11ed-b5ea-0242ac120002', 'user3@email.com', 'Maude', '+31000000002', 99.9, 99.9, 'CUSTOMER');
+
+
+CREATE TABLE bank_accounts (
+  iban VARCHAR(36) PRIMARY KEY,
+  user_uuid VARCHAR(36) NOT NULL,
+  absoluteLimit DECIMAL(13,2) NOT NULL,
+  balance DECIMAL(13,2) NOT NULL,
+  accountType VARCHAR(255) NOT NULL
+);
+
+INSERT INTO bank_accounts (iban, user_uuid, absoluteLimit, balance, accountType)
+VALUES
+  ('NL55RABO6771015777', '1cfc38d6-e378-11ed-b5ea-0242ac120002', 999.0, 80.9, 'CURRENT'),
+  ('NL10RABO5262865534', '1cfc38d6-e378-11ed-b5ea-0242ac120002', 1100.0, 80.9, 'SAVINGS'),
+  ('NL66INGB9224568173', '1cfc3ea8-e378-11ed-b5ea-0242ac120002', 1000.0, 80.9, 'CURRENT'),
+  ('NL29INGB2755167904', '1cfc3ea8-e378-11ed-b5ea-0242ac120002', 1000.0, 80.9, 'SAVINGS'),
+  ('NL58RABO1103924680', '1cfc409c-e378-11ed-b5ea-0242ac120002', 1000.0, 80.9, 'CURRENT'),
+  ('NL47ABNA7853818114', '1cfc409c-e378-11ed-b5ea-0242ac120002', 1000.0, 80.9, 'SAVINGS');
+
+
+CREATE TABLE transactions (
+  uuid VARCHAR(36) PRIMARY KEY,
+  date DATE NOT NULL,
+  account_from VARCHAR(36) NOT NULL,
+  account_to VARCHAR(36) NOT NULL,
+  amount DECIMAL(13,2) NOT NULL,
+  performing_user VARCHAR(36) NOT NULL
+);
+
+INSERT INTO transactions (uuid, date, account_from, account_to, amount, performing_user)
+VALUES
+  ('b5d6fd24-e379-11ed-b5ea-0242ac120002', '2023-01-01', 'NL55RABO6771015777', 'NL10RABO5262865534', 100.0, '1cfc38d6-e378-11ed-b5ea-0242ac120002');
