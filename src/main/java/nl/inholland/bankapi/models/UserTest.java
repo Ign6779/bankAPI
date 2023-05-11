@@ -10,9 +10,8 @@ import java.util.UUID;
 
 @Entity
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class UserTest {
 
     @Id
     @GeneratedValue
@@ -25,8 +24,17 @@ public class User {
     private double transactionLimit;
     private Role role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "userTest", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<BankAccount> bankAccounts;
+
+    public UserTest( String email, String name, String phone, double dayLimit, double transactionLimit, Role role) {
+        this.email = email;
+        this.name = name;
+        this.phone = phone;
+        this.dayLimit = dayLimit;
+        this.transactionLimit = transactionLimit;
+        this.role = role;
+    }
 
     public enum Role {
         CUSTOMER,

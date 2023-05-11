@@ -1,7 +1,7 @@
 package nl.inholland.bankapi.services;
 
 import jakarta.persistence.EntityNotFoundException;
-import nl.inholland.bankapi.models.User;
+import nl.inholland.bankapi.models.UserTest;
 import nl.inholland.bankapi.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,20 +18,20 @@ public class UserService {
 
     }
 
-    public List<User> getAllUsers() {
-        return (List<User>) userRepository.findAll();
+    public List<UserTest> getAllUsers() {
+        return (List<UserTest>) userRepository.findAll();
     }
 
-    public User getUserById(UUID uuid) {
+    public UserTest getUserById(UUID uuid) {
         return userRepository.findById(uuid).orElseThrow(EntityNotFoundException::new);
     }
 
-    public void addUser(User user) {
-        userRepository.save(user);
+    public void addUser(UserTest userTest) {
+        userRepository.save(userTest);
     }
 
-    public void updateUser(User user) {
-        userRepository.save(user); //i know its the same as 'addUser' but it should first search if the user exists
+    public void updateUser(UserTest userTest) {
+        userRepository.save(userTest); //i know its the same as 'addUser' but it should first search if the userTest exists
     }
 
     public void deleteUser(UUID uuid) {

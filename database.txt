@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE userTests (
   uuid VARCHAR(36) PRIMARY KEY,
   email VARCHAR(255) NOT NULL,
   name VARCHAR(255) NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE users (
   role VARCHAR(255) NOT NULL
 );
 
-INSERT INTO users (uuid, email, name, phone, dayLimit, transactionLimit, role)
+INSERT INTO userTests (uuid, email, name, phone, dayLimit, transactionLimit, role)
 VALUES
   ('1cfc38d6-e378-11ed-b5ea-0242ac120002', 'user1@email.com', 'Dude', '+31000000000', 99.9, 99.9, 'EMPLOYEE'),
   ('1cfc3ea8-e378-11ed-b5ea-0242ac120002', 'user2@email.com', 'Lebowski', '+31000000001', 99.9, 99.9, 'CUSTOMER'),

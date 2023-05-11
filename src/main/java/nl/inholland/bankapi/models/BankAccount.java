@@ -5,11 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Entity
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class BankAccount {
 
@@ -18,12 +15,20 @@ public class BankAccount {
     private Long iban; //ive no idea how to create ibans for now. ive some code but its wrong
 
     private String userUuid;
+
+    public BankAccount(String userUuid, double absoluteLimit, double balance, AccountType type) {
+        this.userUuid = userUuid;
+        this.absoluteLimit = absoluteLimit;
+        this.balance = balance;
+        this.type = type;
+    }
+
     private double absoluteLimit;
     private double balance;
     private AccountType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    private UserTest userTest;
 
     public enum AccountType {
         CURRENT,
