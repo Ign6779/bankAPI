@@ -24,7 +24,7 @@ public class UserTest {
     private double transactionLimit;
     private Role role;
 
-    @OneToMany(mappedBy = "userTest", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "userTest", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BankAccount> bankAccounts;
 
     public UserTest( String email, String name, String phone, double dayLimit, double transactionLimit, Role role) {

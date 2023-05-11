@@ -1,41 +1,35 @@
 package nl.inholland.bankapi;
 
-import nl.inholland.bankapi.models.BankAccount;
-import nl.inholland.bankapi.models.UserTest;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @SpringBootApplication
 public class BankapiApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(BankapiApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(BankapiApplication.class, args);
+    }
 
-	@Bean
-	public List<UserTest> users() {
-		return new ArrayList<>(List.of(
-			new UserTest("user1@email.com", "Dude", "+31000000000", 99.9, 99.9, UserTest.Role.EMPLOYEE),
-			new UserTest("user2@email.com", "Lebowski ", "+31000000001", 99.9, 99.9, UserTest.Role.CUSTOMER),
-			new UserTest("user3@email.com", "Maude ", "+31000000002", 99.9, 99.9, UserTest.Role.CUSTOMER)
-		));
-	}
-
-	@Bean
-	public List<BankAccount> bankAccounts() {
-		return new ArrayList<>(List.of(
-			new BankAccount( "NL55RABO6771015777", 100, 80.9,  BankAccount.AccountType.CURRENT),
-			new BankAccount( "NL10RABO5262865534",  80.9, 1100.0, BankAccount.AccountType.SAVINGS),
-			new BankAccount("NL55RABO6771015777",  80.9, 1000.0, BankAccount.AccountType.CURRENT),
-			new BankAccount( "NL55RABO6771015777",  80.9, 1000.0, BankAccount.AccountType.SAVINGS),
-			new BankAccount( "NL55RABO6771015777",  80.9, 1000.0, BankAccount.AccountType.CURRENT),
-			new BankAccount( "NL55RABO6771015777", 80.9, 1000.0, BankAccount.AccountType.SAVINGS)
-		));
-	}
+//	@Bean
+//	public List<UserTest> users() {
+//		return new ArrayList<>(List.of(
+//			new UserTest("user1@email.com", "Dude", "+31000000000", 99.9, 99.9, UserTest.Role.EMPLOYEE),
+//			new UserTest("user2@email.com", "Lebowski ", "+31000000001", 99.9, 99.9, UserTest.Role.CUSTOMER),
+//			new UserTest("user3@email.com", "Maude ", "+31000000002", 99.9, 99.9, UserTest.Role.CUSTOMER)
+//		));
+//	}
+//
+//	@Bean
+//	public List<BankAccount> bankAccounts() {
+//		return new ArrayList<>(List.of(
+//			new BankAccount( "NL55RABO6771015777", 100, 80.9,  BankAccount.AccountType.CURRENT),
+//			new BankAccount( "NL10RABO5262865534",  80.9, 1100.0, BankAccount.AccountType.SAVINGS),
+//			new BankAccount("NL55RABO6771015777",  80.9, 1000.0, BankAccount.AccountType.CURRENT),
+//			new BankAccount( "NL55RABO6771015777",  80.9, 1000.0, BankAccount.AccountType.SAVINGS),
+//			new BankAccount( "NL55RABO6771015777",  80.9, 1000.0, BankAccount.AccountType.CURRENT),
+//			new BankAccount( "NL55RABO6771015777", 80.9, 1000.0, BankAccount.AccountType.SAVINGS)
+//		));
+//	}
 //
 //	@Bean
 //	public List<Transaction> transactions() {

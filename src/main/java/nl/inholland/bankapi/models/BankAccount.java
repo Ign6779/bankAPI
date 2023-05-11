@@ -14,10 +14,11 @@ public class BankAccount {
     @GeneratedValue
     private Long iban; //ive no idea how to create ibans for now. ive some code but its wrong
 
-    private String userUuid;
+    @ManyToOne
+    private UserTest userTest;
 
-    public BankAccount(String userUuid, double absoluteLimit, double balance, AccountType type) {
-        this.userUuid = userUuid;
+    public BankAccount(UserTest userTest, double absoluteLimit, double balance, AccountType type) {
+        this.userTest = userTest;
         this.absoluteLimit = absoluteLimit;
         this.balance = balance;
         this.type = type;
@@ -26,9 +27,6 @@ public class BankAccount {
     private double absoluteLimit;
     private double balance;
     private AccountType type;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private UserTest userTest;
 
     public enum AccountType {
         CURRENT,
