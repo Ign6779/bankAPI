@@ -28,9 +28,12 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity createUser(@RequestBody User user) {
-        return ResponseEntity.status(201).body(
-                Collections.singletonMap("id", userService.addUser(user))
-        );
+        try {
+            userService.addUser(user);
+            return ResponseEntity.status(201).body(null);
+        } catch (Exception e) {
+            return this.handleException(e);
+        }
     }
 
     @PutMapping // edit/update
@@ -46,7 +49,7 @@ public class UserController {
     @DeleteMapping // delete
     public ResponseEntity deleteUser(@RequestBody User user) {
         try {
-            userService.deleteUser(user);
+            userService.deleteUser(user.getUuid());
             return ResponseEntity.status(204).body(null);
         } catch (Exception e) {
             return this.handleException(e);

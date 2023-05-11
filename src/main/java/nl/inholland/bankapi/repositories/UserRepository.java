@@ -1,43 +1,13 @@
 package nl.inholland.bankapi.repositories;
 
 import nl.inholland.bankapi.models.User;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public class UserRepository {
-    private List<User> users;
+public interface UserRepository extends CrudRepository<User, UUID> {
 
-    public UserRepository(List<User> users) {
-        this.users = users;
-    }
-
-    public User addUser(User user) {
-        users.add(user);
-        return (user); //I believe returning the object is correct REST but IDK tbh
-    }
-
-    public void updateUser(User user) { //this is all taken from the ghub, utinam recte operatur
-        users.stream()
-                .filter(u -> u.equals(user))
-                .findFirst()
-                .ifPresentOrElse(
-                    u -> users.set(users.indexOf(u), user),
-                    () -> {
-                    throw new IllegalArgumentException("User not present");
-                    }
-                );
-    }
-
-    public void deleteUser(User user) {
-        users.stream()
-                .filter(u -> u.equals(user))
-                .findFirst().ifPresentOrElse(
-                        u -> users.remove(u),
-                        () -> {
-                            throw new IllegalArgumentException("User not present");
-                        }
-                );
-    }
 }

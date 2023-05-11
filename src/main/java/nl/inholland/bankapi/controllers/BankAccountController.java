@@ -28,9 +28,12 @@ public class BankAccountController {
 
     @PostMapping // create/add
     public ResponseEntity addBankAccount(@RequestBody BankAccount bankAccount) {
-        return ResponseEntity.status(201).body(
-                Collections.singletonMap("id", bankAccountService.addBankAccount(bankAccount))
-        );
+        try {
+            bankAccountService.addBankAccount(bankAccount);
+            return ResponseEntity.status(201).body(null);
+        } catch (Exception e) {
+            return this.handleException(e);
+        }
     }
 
     @PutMapping // edit/update
