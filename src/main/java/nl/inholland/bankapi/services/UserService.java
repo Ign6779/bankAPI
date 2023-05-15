@@ -20,9 +20,12 @@ public class UserService {
         return (List<UserTest>) userRepository.findAll();
     }
 
-    public UserTest getUserById(UUID uuid) {
-        return userRepository.findById(uuid).orElseThrow(EntityNotFoundException::new);
+    public UserTest getUserById(long id){
+        return userRepository.findUserTestById(id);
     }
+//    public UserTest getUserById(UUID uuid) {
+//        return userRepository.findById(uuid).orElseThrow(EntityNotFoundException::new);
+//    }
 
     public void addUser(UserTest userTest) {
         userRepository.save(userTest);

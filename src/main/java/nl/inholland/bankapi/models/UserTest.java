@@ -15,8 +15,7 @@ public class UserTest {
 
     @Id
     @GeneratedValue
-    private UUID uuid;
-
+    private long id;
     private String email;
     private String name;
     private String phone;

@@ -10,6 +10,7 @@ import java.util.UUID;
 @Repository
 public interface UserRepository extends CrudRepository<UserTest, UUID> {
 
-    UserTest findUserTestByUuid(String uuid);
+//    UserTest findUserTestByUuid(String uuid);
     UserTest findUserTestByName(String name);
+    UserTest findUserTestById(long id);
 }

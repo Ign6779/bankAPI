@@ -20,11 +20,16 @@ public class UserController {
     @GetMapping
     public ResponseEntity getAllUsers(){
         try {
-            return ResponseEntity.ok( userService.getAllUsers());
+            return ResponseEntity.ok(userService.getAllUsers());
         }
         catch (Exception e){
             return  this.handleException(e);
         }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity getUserById(@PathVariable int id){
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @PostMapping
@@ -48,14 +53,14 @@ public class UserController {
     }
 
     @DeleteMapping // delete
-    public ResponseEntity deleteUser(@RequestBody UserTest userTest) {
-        try {
-            userService.deleteUser(userTest.getUuid());
-            return ResponseEntity.status(204).body(null);
-        } catch (Exception e) {
-            return this.handleException(e);
-        }
-    }
+//    public ResponseEntity deleteUser(@RequestBody UserTest userTest) {
+//        try {
+//            userService.deleteUser(userTest.getUuid());
+//            return ResponseEntity.status(204).body(null);
+//        } catch (Exception e) {
+//            return this.handleException(e);
+//        }
+//    }
 
     private ResponseEntity handleException(Exception e) {
         ExceptionDTO dto = new ExceptionDTO(e.getClass().getName(), e.getMessage());

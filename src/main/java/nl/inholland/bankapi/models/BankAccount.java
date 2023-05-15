@@ -1,5 +1,6 @@
 package nl.inholland.bankapi.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,6 +16,7 @@ public class BankAccount {
     private Long iban; //ive no idea how to create ibans for now. ive some code but its wrong
 
     @ManyToOne
+    @JsonBackReference
     private UserTest userTest;
 
     public BankAccount(UserTest userTest, double absoluteLimit, double balance, AccountType type) {
