@@ -8,9 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface UserRepository extends CrudRepository<UserTest, UUID> {
-
-//    UserTest findUserTestByUuid(String uuid);
+public interface UserRepository extends CrudRepository<UserTest, Long> {
     UserTest findUserTestByName(String name);
     UserTest findUserTestById(long id);
+
 }

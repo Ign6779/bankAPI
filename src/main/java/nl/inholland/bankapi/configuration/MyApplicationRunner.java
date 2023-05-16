@@ -28,7 +28,9 @@ public class MyApplicationRunner implements ApplicationRunner {
         userRepository.saveAll(List.of(
                 new UserTest("user1@email.com", "Dude", "+31000000000", 99.9, 99.9, UserTest.Role.EMPLOYEE),
                 new UserTest("user2@email.com", "Lebowski", "+31000000001", 99.9, 99.9, UserTest.Role.CUSTOMER),
-                new UserTest("user3@email.com", "Maude", "+31000000002", 99.9, 99.9, UserTest.Role.CUSTOMER)
+                new UserTest("user3@email.com", "Maude", "+31000000002", 99.9, 99.9, UserTest.Role.CUSTOMER),
+                new UserTest("user3@email.com", "test", "+31000000002", 99.9, 99.9, UserTest.Role.CUSTOMER)
+
         ));
         userRepository.findAll().forEach(System.out::println);
 
