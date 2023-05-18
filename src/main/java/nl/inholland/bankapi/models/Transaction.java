@@ -1,8 +1,6 @@
 package nl.inholland.bankapi.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,8 +19,19 @@ public class Transaction {
     private UUID uuid;
 
     private LocalDate timeStamp;
-    private Long accountFrom; //iban
-    private Long accountTo; //iban
+    @ManyToOne
+    private BankAccount accountFrom;
+    @ManyToOne
+    private BankAccount accountTo;
     private double amount;
+
     private String performingUser;
+
+    public Transaction(LocalDate timeStamp, BankAccount accountFrom, BankAccount accountTo, double amount, String performingUser) {
+        this.timeStamp = timeStamp;
+        this.accountFrom = accountFrom;
+        this.accountTo = accountTo;
+        this.amount = amount;
+        this.performingUser = performingUser;
+    }
 }
