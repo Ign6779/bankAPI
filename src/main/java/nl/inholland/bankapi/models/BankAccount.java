@@ -24,11 +24,14 @@ public class BankAccount {
         this.absoluteLimit = absoluteLimit;
         this.balance = balance;
         this.type = type;
+        this.isAvailable=true;
     }
 
     private double absoluteLimit;
     private double balance;
     private AccountType type;
+
+    private boolean isAvailable;
 
     public enum AccountType {
         CURRENT,
