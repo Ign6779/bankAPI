@@ -2,13 +2,16 @@ package nl.inholland.bankapi.configuration;
 
 import jakarta.transaction.Transactional;
 import nl.inholland.bankapi.models.BankAccount;
+import nl.inholland.bankapi.models.Transaction;
 import nl.inholland.bankapi.models.UserTest;
 import nl.inholland.bankapi.repositories.BankAccountRepository;
+import nl.inholland.bankapi.repositories.TransactionRepository;
 import nl.inholland.bankapi.repositories.UserRepository;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
@@ -16,10 +19,12 @@ public class MyApplicationRunner implements ApplicationRunner {
 
     private final UserRepository userRepository;
     private final BankAccountRepository bankAccountRepository;
+    private final TransactionRepository transactionRepository;
 
-    public MyApplicationRunner(UserRepository userRepository, BankAccountRepository bankAccountRepository) {
+    public MyApplicationRunner(UserRepository userRepository, BankAccountRepository bankAccountRepository, TransactionRepository transactionRepository) {
         this.userRepository = userRepository;
         this.bankAccountRepository = bankAccountRepository;
+        this.transactionRepository = transactionRepository;
     }
 
     @Override
@@ -45,10 +50,11 @@ public class MyApplicationRunner implements ApplicationRunner {
         ));
 
         bankAccountRepository.findAll().forEach(System.out::println);
-//
-//        List<Transaction> transactions =
-//                Arrays.asList(
-//
-//                );
+
+        List<BankAccount> bankAccounts = (List<BankAccount>) bankAccountRepository.findAll();
+        transactionRepository.saveAll(List.of(
+                new Transaction(LocalDate.of(2023, 1, 1), bankAccounts.get(0), bankAccounts.get(1), 100.0, "1cfc38d6-e378-11ed-b5ea-0242ac120002")
+        ));
+        transactionRepository.findAll().forEach(System.out::println);
     }
 }
