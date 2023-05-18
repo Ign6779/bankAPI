@@ -25,10 +25,9 @@ public class Transaction {
     private BankAccount accountTo;
     private double amount;
 
-    @OneToOne
-    private UserTest performingUser;
+    private String performingUser;
 
-    public Transaction(LocalDate timeStamp, BankAccount accountFrom, BankAccount accountTo, double amount, UserTest performingUser) {
+    public Transaction(LocalDate timeStamp, BankAccount accountFrom, BankAccount accountTo, double amount, String performingUser) {
         this.timeStamp = timeStamp;
         this.accountFrom = accountFrom;
         this.accountTo = accountTo;

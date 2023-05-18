@@ -52,13 +52,7 @@ public class MyApplicationRunner implements ApplicationRunner {
 
         List<BankAccount> bankAccounts = (List<BankAccount>) bankAccountRepository.findAll();
         transactionRepository.saveAll(List.of(
-                new Transaction(
-                        LocalDate.of(2023, 1, 1),
-                        bankAccounts.get(1),
-                        bankAccounts.get(2),
-                        100.0,
-                        userRepository.findUserTestByName("Dude")
-                )
+                new Transaction(LocalDate.of(2023, 1, 1), bankAccounts.get(0), bankAccounts.get(1), 100.0, "1cfc38d6-e378-11ed-b5ea-0242ac120002")
         ));
         transactionRepository.findAll().forEach(System.out::println);
     }
