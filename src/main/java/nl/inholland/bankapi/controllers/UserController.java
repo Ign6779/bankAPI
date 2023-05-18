@@ -1,12 +1,11 @@
 package nl.inholland.bankapi.controllers;
 
+import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.bankapi.models.UserTest;
 import nl.inholland.bankapi.services.UserService;
 import nl.inholland.bankapi.models.dto.ExceptionDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("users")
@@ -31,7 +30,12 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity getUserById(@PathVariable int id){
-        return ResponseEntity.ok(userService.getUserById(id));
+        try {
+            return ResponseEntity.ok(userService.getUserById(id));
+        } catch (EntityNotFoundException enfe) {
+            return this.handleException(enfe);
+        }
+
     }
 
     @PostMapping
@@ -78,10 +82,10 @@ public class UserController {
     private boolean isUserFieldsValid(UserTest userTest) {
         // Perform field validation here
         // For example, check if the required fields are not null or empty
-        return userTest.getName() != null && !userTest.getName().isEmpty()
+        return userTest.getFirstName() != null && !userTest.getFirstName().isEmpty()
                 && userTest.getEmail() != null && !userTest.getEmail().isEmpty()
                 && userTest.getPhone() != null && !userTest.getPhone().isEmpty()
-                && userTest.getRole() != null && userTest.getDayLimit() >0
+                && userTest.getRoles() != null && userTest.getDayLimit() >0
                 && userTest.getTransactionLimit()>0;
     }
 }
