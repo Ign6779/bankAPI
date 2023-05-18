@@ -35,21 +35,21 @@ public class TransactionService {
         Transaction transactionToUpdate = transactionRepository
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Transaction not found"));
-        transactionToUpdate.setTimeStamp(dto.getTimeStamp());
+
         transactionToUpdate.setAccountFrom(dto.getAccountFrom());
         transactionToUpdate.setAccountTo(dto.getAccountTo());
         transactionToUpdate.setAmount(dto.getAmount());
-        transactionToUpdate.setPerformingUser(dto.getPerformingUser());
+
         return transactionRepository.save(transactionToUpdate);
     }
 
     private Transaction mapDtoToTransaction(TransactionDTO dto) {
         Transaction newTransaction = new Transaction();
-        newTransaction.setTimeStamp(dto.getTimeStamp());
+
         newTransaction.setAccountFrom(dto.getAccountFrom());
         newTransaction.setAccountTo(dto.getAccountTo());
         newTransaction.setAmount(dto.getAmount());
-        newTransaction.setPerformingUser(dto.getPerformingUser());
+
         return newTransaction;
     }
 }
