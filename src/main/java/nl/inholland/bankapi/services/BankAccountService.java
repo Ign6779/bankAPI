@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,6 +43,12 @@ public class BankAccountService {
         return bankAccountRepository.findById(iban).orElseThrow(EntityNotFoundException::new);
     }
 
+/*    public BankAccount getBankAccountByUserName(String userName) {
+        return bankAccountRepository.findByUserName(userName).orElseThrow(EntityNotFoundException::new);
+    }
+    public BankAccount getBankAccountByUserId(long userId) {
+        return bankAccountRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+    }*/
     public void addBankAccount(BankAccount bankAccount) {
         bankAccountRepository.save(bankAccount);
     }
@@ -50,7 +57,4 @@ public class BankAccountService {
         bankAccountRepository.save(bankAccount);
     }
 
-    public void deleteBankAccount(Long iban) {
-        bankAccountRepository.deleteById(iban);
-    }
 }

@@ -39,24 +39,24 @@ public class BankAccountController {
         }
     }
 
-//    @GetMapping
-//    public ResponseEntity getBankAccountByUserName(@RequestParam String userName) {
-//        try {
-//            return ResponseEntity.status(200).body(bankAccountService.getBankAccountByUserName(userName));
-//        } catch (Exception e) {
-//            return this.handleException(e);
-//        }
-//    }
-//
-//    @GetMapping // get bank account by user id
-//    public ResponseEntity getBankAccountByUserId(@RequestParam UUID userId) {
-//        try {
-//            return ResponseEntity.status(200).body(bankAccountService.getBankAccountByUserId(userId));
-//        } catch (Exception e) {
-//            return this.handleException(e);
-//        }
-//    }
-//
+/*    @GetMapping
+    public ResponseEntity getBankAccountByUserName(@RequestParam String userName) {
+        try {
+            return ResponseEntity.status(200).body(bankAccountService.getBankAccountByUserName(userName));
+        } catch (Exception e) {
+           return this.handleException(e);
+        }
+    }
+
+    @GetMapping // get bank account by user id
+    public ResponseEntity getBankAccountByUserId(@RequestParam UUID userId) {
+        try {
+            return ResponseEntity.status(200).body(bankAccountService.getBankAccountByUserId(userId));
+        } catch (Exception e) {
+            return this.handleException(e);
+        }
+    }*/
+
     @PostMapping // create/add
     public ResponseEntity addBankAccount(@RequestBody BankAccount bankAccount) {
         try {
