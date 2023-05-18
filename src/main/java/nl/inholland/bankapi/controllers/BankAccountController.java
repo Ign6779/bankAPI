@@ -20,8 +20,8 @@ public class BankAccountController {
 
     // we will need Get Methods -Beth
 
-    @GetMapping
-    public ResponseEntity getBankAccount(@RequestParam long iban) {
+    @GetMapping("/{iban}")
+    public ResponseEntity getBankAccount(@PathVariable long iban) {
         try {
             return ResponseEntity.status(200).body(bankAccountService.getBankAccountById(iban));
         } catch (Exception e) {
@@ -29,7 +29,7 @@ public class BankAccountController {
         }
     }
 
-    @GetMapping // get all
+    @GetMapping
     public ResponseEntity getAllBankAccounts(@RequestParam(required = false) Integer offset,
                                              @RequestParam(required = false) Integer limit) {
         try {
