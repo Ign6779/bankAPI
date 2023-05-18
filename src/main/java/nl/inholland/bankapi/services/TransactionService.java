@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionService {
@@ -17,8 +18,23 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
     }
 
-    public List<Transaction> getAllTransactions(){
-        return (List<Transaction>) transactionRepository.findAll();
+    public List<Transaction> getAllTransactions(Integer offset, Integer limit){
+        List<Transaction> allTransactions = (List<Transaction>) transactionRepository.findAll();
+
+        // Apply filtering based on the provided parameters
+        if (offset != null && offset > 0) {
+            allTransactions = allTransactions.stream()
+                    .skip(offset)
+                    .collect(Collectors.toList());
+        }
+
+        if (limit != null && limit > 0) {
+            allTransactions = allTransactions.stream()
+                    .limit(limit)
+                    .collect(Collectors.toList());
+        }
+
+        return allTransactions;
     }
 
     public Transaction addTransaction(TransactionDTO dto) {

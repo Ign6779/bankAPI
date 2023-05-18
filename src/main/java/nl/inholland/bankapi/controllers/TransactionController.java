@@ -21,45 +21,65 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
+    /*@GetMapping
+    public ResponseEntity getAllTransactions(){
+        try {
+            return ResponseEntity.ok(transactionService.getAllTransactions());
+        }
+        catch (Exception e){
+            return  this.handleException(e);
+        }
+    }*/
+
     @GetMapping
-    public ResponseEntity getAllTransactions() {
-        return ResponseEntity.ok(transactionService.getAllTransactions());
+    public ResponseEntity getAllTransactions(@RequestParam(required = false) Integer offset,
+                                      @RequestParam(required = false) Integer limit){
+        try {
+            return ResponseEntity.ok(transactionService.getAllTransactions(offset,  limit));
+        }
+        catch (Exception e){
+            return  this.handleException(e);
+        }
     }
 
     @PostMapping
-    public ResponseEntity addTransaction(@RequestBody TransactionDTO transaction) {
+    public ResponseEntity createTransaction(@RequestBody TransactionDTO transaction) {
         try {
-            return ResponseEntity.status(201).body(
-                    transactionService.addTransaction(transaction)
-            );
+            if(isTransactionFieldsValid(transaction)){
+                transactionService.addTransaction(transaction);
+                return ResponseEntity.status(201).body(null);
+            }else
+            {
+                return ResponseEntity.status(400).body("Invalid amount or field.");
+            }
+
         } catch (Exception e) {
-            // This exposes too much data
-            return this.handleException(400, e);
+            return this.handleException(e);
         }
     }
 
-    @GetMapping(value = "{id}")
-    public ResponseEntity getTransactionById(@PathVariable UUID id) {
-        try {
-            return ResponseEntity.ok(transactionService.getTransactionById(id));
-        } catch (EntityNotFoundException enfe) {
-            return this.handleException(404, enfe);
-        }
+    @GetMapping("/{id}")
+    public ResponseEntity getTransactionById(@PathVariable UUID id){
+        return ResponseEntity.ok(transactionService.getTransactionById(id));
     }
 
-    //TODO: Returns no body. Fix that
-    @PutMapping("{id}")
-    public ResponseEntity updateTransaction(@PathVariable UUID id, @RequestBody TransactionDTO dto) {
+    @PutMapping("/{id}")
+    public ResponseEntity updateTransaction(@PathVariable UUID id,@RequestBody TransactionDTO transactionDTO) {
         try {
-            Transaction toUpdate = transactionService.updateTransaction(id, dto);
-            return ResponseEntity.status(204).body(toUpdate);
+            transactionService.updateTransaction(id,transactionDTO);
+            return ResponseEntity.status(204).body(null);
         } catch (Exception e) {
-            return this.handleException(400, e);
+            return this.handleException(e);
         }
     }
 
-    private ResponseEntity handleException(int status, Exception e) {
+    private ResponseEntity handleException(Exception e) {
         ExceptionDTO dto = new ExceptionDTO(e.getClass().getName(), e.getMessage());
-        return ResponseEntity.status(status).body(dto);
+        return ResponseEntity.status(400).body(dto);
+    }
+
+    private boolean isTransactionFieldsValid(TransactionDTO transaction) {
+        return transaction.getAmount() > 0 && transaction.getAccountTo() != null
+                && transaction.getAccountFrom() != null;
     }
 }
