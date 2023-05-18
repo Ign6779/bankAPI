@@ -1,4 +1,4 @@
-package nl.inholland.bankapi;
+package nl.inholland.bankapi.filter;
 
 import jakarta.servlet.*;
 import org.springframework.beans.factory.annotation.Value;
