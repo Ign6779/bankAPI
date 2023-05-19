@@ -1,6 +1,7 @@
 package nl.inholland.bankapi.services;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import nl.inholland.bankapi.models.UserTest;
 import nl.inholland.bankapi.models.dto.UserDTO;
 import nl.inholland.bankapi.repositories.UserRepository;
@@ -54,7 +55,11 @@ public class UserService {
         return dto;
     }
 
-
+    public UserDTO getUserByEmail(String email){
+        UserTest user = userRepository.findUserTestByEmail(email).orElseThrow(() -> new EntityNotFoundException("User with email: " + email + " not found"));
+        UserDTO dto= mapDtoToUser(user);
+        return dto;
+    }
     public void addUser(UserTest userTest) {
         userRepository.save(userTest);
     }
@@ -71,8 +76,24 @@ public class UserService {
         userRepository.save(userToUpdate);
     }
 
+    public void updateUser(String email,UserTest user) {
+        UserTest userToUpdate= userRepository.findUserTestByEmail(email).orElseThrow(() -> new EntityNotFoundException("User with id: " + email + " not found"));
+        userToUpdate.setFirstName(user.getFirstName());
+        userToUpdate.setPhone(user.getPhone());
+        userToUpdate.setEmail(user.getEmail());
+        userToUpdate.setDayLimit(user.getDayLimit());
+        userToUpdate.setTransactionLimit(user.getTransactionLimit());
+        userToUpdate.setRoles(user.getRoles());
+        userToUpdate.setPassword(user.getPassword());
+        userRepository.save(userToUpdate);
+    }
+    @Transactional
     public void deleteUser(long id) {
         userRepository.deleteById(id); //we could instead pass the entire user object, its the same
+    }
+    @Transactional
+    public void deleteUser(String email){
+        userRepository.deleteByEmail(email);
     }
 
     private UserDTO mapDtoToUser(UserTest user) {

@@ -28,7 +28,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity getUserById(@PathVariable int id){
         try {
             return ResponseEntity.ok(userService.getUserById(id));
@@ -37,7 +37,14 @@ public class UserController {
         }
 
     }
-
+    @GetMapping("/email/{email}")
+    public ResponseEntity getUserByEmail(@PathVariable String email){
+        try {
+            return ResponseEntity.ok(userService.getUserByEmail(email));
+        } catch (EntityNotFoundException enfe) {
+            return this.handleException(enfe);
+        }
+    }
     @PostMapping
     public ResponseEntity createUser(@RequestBody UserTest userTest) {
         try {
@@ -63,11 +70,29 @@ public class UserController {
             return this.handleException(e);
         }
     }
-
+    @PutMapping("/email/{email}") // edit/update
+    public ResponseEntity updateUser(@PathVariable String  email,@RequestBody UserTest userTest) {
+        try {
+            userService.updateUser(email,userTest);
+            return ResponseEntity.status(204).body(null);
+        } catch (Exception e) {
+            return this.handleException(e);
+        }
+    }
     @DeleteMapping("/{id}") // delete
     public ResponseEntity deleteUser(@PathVariable int id) {
         try {
             userService.deleteUser(id);
+            return ResponseEntity.status(204).body(null);
+        } catch (Exception e) {
+            return this.handleException(e);
+        }
+    }
+
+    @DeleteMapping("/email/{email}") // delete
+    public ResponseEntity deleteUser(@PathVariable String email) {
+        try {
+            userService.deleteUser(email);
             return ResponseEntity.status(204).body(null);
         } catch (Exception e) {
             return this.handleException(e);
