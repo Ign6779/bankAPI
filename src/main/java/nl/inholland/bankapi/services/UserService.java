@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,8 +50,8 @@ public class UserService {
         return users;
     }
 
-    public UserDTO getUserById(long id){
-        UserTest user=userRepository.findUserTestById(id).orElseThrow(() -> new EntityNotFoundException("User with id: " + id + " not found"));
+    public UserDTO getUserById(UUID id){
+        UserTest user=userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id: " + id + " not found"));
         UserDTO dto = mapDtoToUser(user);
         return dto;
     }
@@ -64,8 +65,8 @@ public class UserService {
         userRepository.save(userTest);
     }
 
-    public void updateUser(Long id,UserTest user) {
-        UserTest userToUpdate= userRepository.findUserTestById(id).orElseThrow(() -> new EntityNotFoundException("User with id: " + id + " not found"));
+    public void updateUser(UUID id, UserTest user) {
+        UserTest userToUpdate= userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id: " + id + " not found"));
         userToUpdate.setFirstName(user.getFirstName());
         userToUpdate.setPhone(user.getPhone());
         userToUpdate.setEmail(user.getEmail());
@@ -76,28 +77,29 @@ public class UserService {
         userRepository.save(userToUpdate);
     }
 
-    public void updateUser(String email,UserTest user) {
-        UserTest userToUpdate= userRepository.findUserTestByEmail(email).orElseThrow(() -> new EntityNotFoundException("User with id: " + email + " not found"));
-        userToUpdate.setFirstName(user.getFirstName());
-        userToUpdate.setPhone(user.getPhone());
-        userToUpdate.setEmail(user.getEmail());
-        userToUpdate.setDayLimit(user.getDayLimit());
-        userToUpdate.setTransactionLimit(user.getTransactionLimit());
-        userToUpdate.setRoles(user.getRoles());
-        userToUpdate.setPassword(user.getPassword());
-        userRepository.save(userToUpdate);
-    }
-    @Transactional
-    public void deleteUser(long id) {
+//    public void updateUser(String email,UserTest user) {
+//        UserTest userToUpdate= userRepository.findUserTestByEmail(email).orElseThrow(() -> new EntityNotFoundException("User with id: " + email + " not found"));
+//        userToUpdate.setFirstName(user.getFirstName());
+//        userToUpdate.setPhone(user.getPhone());
+//        userToUpdate.setEmail(user.getEmail());
+//        userToUpdate.setDayLimit(user.getDayLimit());
+//        userToUpdate.setTransactionLimit(user.getTransactionLimit());
+//        userToUpdate.setRoles(user.getRoles());
+//        userToUpdate.setPassword(user.getPassword());
+//        userRepository.save(userToUpdate);
+//    }
+//    @Transactional
+    public void deleteUser(UUID id) {
         userRepository.deleteById(id); //we could instead pass the entire user object, its the same
     }
-    @Transactional
-    public void deleteUser(String email){
-        userRepository.deleteByEmail(email);
-    }
+//    @Transactional
+//    public void deleteUser(String email){
+//        userRepository.deleteByEmail(email);
+//    }
 
     private UserDTO mapDtoToUser(UserTest user) {
         UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
         dto.setRoles(user.getRoles());

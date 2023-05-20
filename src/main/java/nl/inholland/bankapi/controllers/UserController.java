@@ -7,6 +7,8 @@ import nl.inholland.bankapi.models.dto.ExceptionDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("users")
 public class UserController {
@@ -28,8 +30,8 @@ public class UserController {
         }
     }
 
-    @GetMapping("/id/{id}")
-    public ResponseEntity getUserById(@PathVariable int id){
+    @GetMapping("/{id}")
+    public ResponseEntity getUserById(@PathVariable UUID id){
         try {
             return ResponseEntity.ok(userService.getUserById(id));
         } catch (EntityNotFoundException enfe) {
@@ -37,14 +39,14 @@ public class UserController {
         }
 
     }
-    @GetMapping("/email/{email}")
-    public ResponseEntity getUserByEmail(@PathVariable String email){
-        try {
-            return ResponseEntity.ok(userService.getUserByEmail(email));
-        } catch (EntityNotFoundException enfe) {
-            return this.handleException(enfe);
-        }
-    }
+//    @GetMapping("/email/{email}")
+//    public ResponseEntity getUserByEmail(@PathVariable String email){
+//        try {
+//            return ResponseEntity.ok(userService.getUserByEmail(email));
+//        } catch (EntityNotFoundException enfe) {
+//            return this.handleException(enfe);
+//        }
+//    }
     @PostMapping
     public ResponseEntity createUser(@RequestBody UserTest userTest) {
         try {
@@ -62,7 +64,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}") // edit/update
-    public ResponseEntity updateUser(@PathVariable Long id,@RequestBody UserTest userTest) {
+    public ResponseEntity updateUser(@PathVariable UUID id, @RequestBody UserTest userTest) {
         try {
             userService.updateUser(id,userTest);
             return ResponseEntity.status(204).body(null);
@@ -70,17 +72,17 @@ public class UserController {
             return this.handleException(e);
         }
     }
-    @PutMapping("/email/{email}") // edit/update
-    public ResponseEntity updateUser(@PathVariable String  email,@RequestBody UserTest userTest) {
-        try {
-            userService.updateUser(email,userTest);
-            return ResponseEntity.status(204).body(null);
-        } catch (Exception e) {
-            return this.handleException(e);
-        }
-    }
+//    @PutMapping("/email/{email}") // edit/update
+//    public ResponseEntity updateUser(@PathVariable String  email,@RequestBody UserTest userTest) {
+//        try {
+//            userService.updateUser(email,userTest);
+//            return ResponseEntity.status(204).body(null);
+//        } catch (Exception e) {
+//            return this.handleException(e);
+//        }
+//    }
     @DeleteMapping("/{id}") // delete
-    public ResponseEntity deleteUser(@PathVariable int id) {
+    public ResponseEntity deleteUser(@PathVariable UUID id) {
         try {
             userService.deleteUser(id);
             return ResponseEntity.status(204).body(null);
@@ -89,15 +91,15 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/email/{email}") // delete
-    public ResponseEntity deleteUser(@PathVariable String email) {
-        try {
-            userService.deleteUser(email);
-            return ResponseEntity.status(204).body(null);
-        } catch (Exception e) {
-            return this.handleException(e);
-        }
-    }
+//    @DeleteMapping("/email/{email}") // delete
+//    public ResponseEntity deleteUser(@PathVariable String email) {
+//        try {
+//            userService.deleteUser(email);
+//            return ResponseEntity.status(204).body(null);
+//        } catch (Exception e) {
+//            return this.handleException(e);
+//        }
+//    }
 
     private ResponseEntity handleException(Exception e) {
         ExceptionDTO dto = new ExceptionDTO(e.getClass().getName(), e.getMessage());
