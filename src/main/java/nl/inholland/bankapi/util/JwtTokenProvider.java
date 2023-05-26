@@ -27,39 +27,18 @@ public class JwtTokenProvider {
     }
 
     public String CreateToken(String username, List<Role> roles) throws JwtException {
-        /* The token will look something like this
 
-        {
-          "sub": "admin",
-          "auth": [
-            {
-              "role": "ROLE_ADMIN"
-            }
-          ],
-          "iat": 1684073744,
-          "exp": 1684077344
-        }
-
-        */
-
-        // We create a new Claims object for the token
-        // The username is the subject
         Claims claims = Jwts.claims().setSubject(username);
 
-        // And we add an array of the roles to the auth element of the Claims
-        // Note that we only provide the role as information to the frontend
-        // The actual role based authorization should always be done in the backend code
         claims.put("auth",
                 roles
                         .stream()
                         .map(Role::name)
                         .toList());
 
-        // We decide on an expiration date
         Date now = new Date();
         Date expiration = new Date(now.getTime() + validityInMicroseconds);
 
-        // And finally, generate the token and sign it. .compact() then turns it into a string that we can return.
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
