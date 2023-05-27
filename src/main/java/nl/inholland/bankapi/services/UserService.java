@@ -68,7 +68,7 @@ public class UserService {
     }
 
     public UserDTO getUserByEmail(String email){
-        UserTest user = userRepository.findUserTestByEmail(email).orElseThrow(() -> new EntityNotFoundException("User with email: " + email + " not found"));
+        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new EntityNotFoundException("User with email: " + email + " not found"));
         UserDTO dto= mapDtoToUser(user);
         return dto;
     }
