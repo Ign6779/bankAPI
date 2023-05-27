@@ -11,11 +11,11 @@ public class BankapiApplication {
     }
 
 //	@Bean
-//	public List<UserTest> users() {
+//	public List<User> users() {
 //		return new ArrayList<>(List.of(
-//			new UserTest("user1@email.com", "Dude", "+31000000000", 99.9, 99.9, UserTest.Role.EMPLOYEE),
-//			new UserTest("user2@email.com", "Lebowski ", "+31000000001", 99.9, 99.9, UserTest.Role.CUSTOMER),
-//			new UserTest("user3@email.com", "Maude ", "+31000000002", 99.9, 99.9, UserTest.Role.CUSTOMER)
+//			new User("user1@email.com", "Dude", "+31000000000", 99.9, 99.9, User.Role.EMPLOYEE),
+//			new User("user2@email.com", "Lebowski ", "+31000000001", 99.9, 99.9, User.Role.CUSTOMER),
+//			new User("user3@email.com", "Maude ", "+31000000002", 99.9, 99.9, User.Role.CUSTOMER)
 //		));
 //	}
 //

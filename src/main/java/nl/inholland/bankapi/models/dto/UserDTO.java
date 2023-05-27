@@ -7,11 +7,13 @@ import nl.inholland.bankapi.models.BankAccount;
 import nl.inholland.bankapi.models.Role;
 
 import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class UserDTO {
+    private UUID id;
     private String firstName;
     private String lastName;
     private String email;

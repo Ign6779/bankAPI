@@ -5,15 +5,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
 @NoArgsConstructor
-public class UserTest {
+@Table(name = "users")
+public class User {
 
     @Id
     @GeneratedValue
-    private long id;
+    private UUID id;
     private String email;
 
     private String password;
@@ -21,15 +23,15 @@ public class UserTest {
 
     private String lastName;
     private String phone;
-    private double dayLimit;
-    private double transactionLimit;
+    private Double dayLimit;
+    private Double transactionLimit;
     @ElementCollection(fetch = FetchType.EAGER)
     private List <Role> roles;
 
-    @OneToMany(mappedBy = "userTest", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<BankAccount> bankAccounts;
 
-    public UserTest(String email,String password , String firstName,String lastName, String phone, double dayLimit, double transactionLimit, List<Role> roles) {
+    public User(String email, String password , String firstName, String lastName, String phone, double dayLimit, double transactionLimit, List<Role> roles) {
         this.email = email;
         this.password=password;
         this.firstName = firstName;

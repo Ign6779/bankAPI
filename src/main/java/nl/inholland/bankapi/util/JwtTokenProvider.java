@@ -1,9 +1,9 @@
 package nl.inholland.bankapi.util;
 
 import io.jsonwebtoken.JwtException;
-import lombok.Value;
 import nl.inholland.bankapi.models.Role;
 import nl.inholland.bankapi.services.MyUserDetailsService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,9 +26,9 @@ public class JwtTokenProvider {
         this.jwtKeyProvider = jwtKeyProvider;
     }
 
-    public String CreateToken(String username, List<Role> roles) throws JwtException {
+    public String CreateToken(String email, List<Role> roles) throws JwtException {
 
-        Claims claims = Jwts.claims().setSubject(username);
+        Claims claims = Jwts.claims().setSubject(email);
 
         claims.put("auth",
                 roles
@@ -50,8 +50,8 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         try {
             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(jwtKeyProvider.getPrivateKey()).build().parseClaimsJws(token);
-            String username = claims.getBody().getSubject();
-            UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);
+            String email = claims.getBody().getSubject();
+            UserDetails userDetails = myUserDetailsService.loadUserByUsername(email);
             return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
         } catch (JwtException | IllegalArgumentException e) {
             throw new JwtException("Bearer token not valid");

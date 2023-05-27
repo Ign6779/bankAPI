@@ -20,8 +20,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-			<!--			Transient dependency snakeyaml 1.33 is unsafe.
-                            Excluded and added safe snakeyaml version 2.0 separately -->
 			<exclusions>
 				<exclusion>
 					<groupId>org.yaml</groupId>

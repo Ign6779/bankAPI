@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import nl.inholland.bankapi.models.BankAccount;
 import nl.inholland.bankapi.models.Role;
 import nl.inholland.bankapi.models.Transaction;
-import nl.inholland.bankapi.models.UserTest;
+import nl.inholland.bankapi.models.User;
 import nl.inholland.bankapi.repositories.BankAccountRepository;
 import nl.inholland.bankapi.repositories.TransactionRepository;
 import nl.inholland.bankapi.repositories.UserRepository;
@@ -19,13 +19,11 @@ import java.util.List;
 @Component
 public class MyApplicationRunner implements ApplicationRunner {
 
-    private final UserRepository userRepository;
     private final UserService userService;
     private final BankAccountRepository bankAccountRepository;
     private final TransactionRepository transactionRepository;
 
-    public MyApplicationRunner(UserRepository userRepository, BankAccountRepository bankAccountRepository, TransactionRepository transactionRepository , UserService userService) {
-        this.userRepository = userRepository;
+    public MyApplicationRunner( BankAccountRepository bankAccountRepository, TransactionRepository transactionRepository , UserService userService) {
         this.bankAccountRepository = bankAccountRepository;
         this.transactionRepository = transactionRepository;
         this.userService=userService;
@@ -34,14 +32,15 @@ public class MyApplicationRunner implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) throws Exception {
-        userRepository.saveAll(List.of(
-                new UserTest("user1@email.com", "test", "Dude", "Bli", "+31000000000", 99.9, 99.9, List.of( Role.EMPLOYEE)),
-                new UserTest("user2@email.com","test" , "Lebowski", "de blo","+31000000001", 99.9, 99.9, List.of(Role.CUSTOMER)),
-                new UserTest("user3@email.com","test" ,"Maude", "kliblo" , "+31000000002", 99.9, 99.9, List.of(Role.CUSTOMER)),
-                new UserTest("user4@email.com", "test","test","boss" ,"+31000000002", 99.9, 99.9, List.of(Role.CUSTOMER))
+        List.of(
+                new User("user1@email.com", "test", "Dude", "Bli", "+31000000000", 99.9, 99.9, List.of( Role.ROLE_EMPLOYEE)),
+                new User("user2@email.com","test" , "Lebowski", "de blo","+31000000001", 99.9, 99.9, List.of(Role.ROLE_CUSTOMER)),
+                new User("user3@email.com","test" ,"Maude", "kliblo" , "+31000000002", 99.9, 99.9, List.of(Role.ROLE_CUSTOMER)),
+                new User("user4@email.com", "test","test","boss" ,"+31000000002", 99.9, 99.9, List.of(Role.ROLE_CUSTOMER))
 
-        ));
-        userRepository.findAll().forEach(System.out::println);
+        ).forEach(user -> userService.addUser(user));
+
+        userService.getAllUsers(null,null, null).forEach(System.out::println);
 
 
         bankAccountRepository.saveAll(List.of(
