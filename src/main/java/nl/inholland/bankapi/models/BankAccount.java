@@ -2,7 +2,6 @@ package nl.inholland.bankapi.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,10 +16,10 @@ public class BankAccount {
 
     @ManyToOne
     @JsonBackReference
-    private UserTest userTest;
+    private User user;
 
-    public BankAccount(UserTest userTest, double absoluteLimit, double balance, AccountType type) {
-        this.userTest = userTest;
+    public BankAccount(User user, double absoluteLimit, double balance, AccountType type) {
+        this.user = user;
         this.absoluteLimit = absoluteLimit;
         this.balance = balance;
         this.type = type;

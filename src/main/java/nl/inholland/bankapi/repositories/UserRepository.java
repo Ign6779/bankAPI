@@ -1,6 +1,6 @@
 package nl.inholland.bankapi.repositories;
 
-import nl.inholland.bankapi.models.UserTest;
+import nl.inholland.bankapi.models.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,10 +8,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface UserRepository extends CrudRepository<UserTest, UUID> {
-    UserTest findUserTestByFirstName(String name);
-    Optional<UserTest>  findUserTestByFirstNameAndLastName(String firstName, String lastName);
-    Optional< UserTest> findUserTestById(long id);
-    Optional<UserTest> findUserTestByEmail(String email);
-    void deleteByEmail(String email);
+
+public interface UserRepository extends CrudRepository<User, UUID> {
+    Optional<User> findUserByFirstNameAndLastName(String firstName, String lastName);
+    Optional<User> findUserByEmail(String email);
 }
