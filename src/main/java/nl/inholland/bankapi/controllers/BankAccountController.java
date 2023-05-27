@@ -68,10 +68,9 @@ public class BankAccountController {
     }
 
     @PutMapping // edit/update
-    public ResponseEntity updateBankAccount(@RequestBody BankAccount bankAccount) {
+    public ResponseEntity updateBankAccount(@PathVariable Long id, @RequestBody BankAccount bankAccount) {
         try {
-            bankAccountService.updateBankAccount(bankAccount);
-            return ResponseEntity.status(204).body(null);
+            return ResponseEntity.status(200).body(bankAccountService.updateBankAccount(id, bankAccount));
         } catch (Exception e) {
             return this.handleException(e);
         }

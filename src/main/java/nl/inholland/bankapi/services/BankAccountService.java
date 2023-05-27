@@ -54,12 +54,12 @@ public class BankAccountService {
         bankAccountRepository.save(bankAccount);
     }
 
-    public void updateBankAccount(Long iban, BankAccount bankAccount) {
+    public BankAccount updateBankAccount(Long iban, BankAccount bankAccount) {
         BankAccount bankAccountToUpdate = bankAccountRepository.findById(iban)
                         .orElseThrow(() -> new EntityNotFoundException("Bank account with id " + iban + " not found"));
         updateBankAccountField(bankAccount.getAbsoluteLimit(), bankAccountToUpdate::setAbsoluteLimit);
-        updateBankAccountField(bankAccount.getAvailable());
-        bankAccountRepository.save(bankAccount);
+        updateBankAccountField(bankAccount.isAvailable(), bankAccountToUpdate::setAvailable);
+        return bankAccountRepository.save(bankAccount);
     }
 
     private <T> void updateBankAccountField(T value, Consumer<T> setter) {
