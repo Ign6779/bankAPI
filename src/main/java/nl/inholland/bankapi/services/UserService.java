@@ -68,9 +68,7 @@ public class UserService {
     }
 
     public UserDTO getUserByEmail(String email){
-        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new EntityNotFoundException("User with email: " + email + " not found"));
-        UserDTO dto= mapDtoToUser(user);
-        return dto;
+        return mapDtoToUser(userRepository.findUserByEmail(email).orElseThrow(() -> new EntityNotFoundException("User with id: " + email + " not found")));
     }
    
 
@@ -132,7 +130,7 @@ public class UserService {
             return jwtTokenProvider.CreateToken(user.getEmail(), user.getRoles());
         }
         else {
-            throw new javax.naming.AuthenticationException("Invalid username/password");
+            throw new javax.naming.AuthenticationException("Invalid password");
         }
     }
 }
