@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,8 +54,17 @@ public class BankAccountService {
         bankAccountRepository.save(bankAccount);
     }
 
-    public void updateBankAccount(BankAccount bankAccount) {
-        bankAccountRepository.save(bankAccount);
+    public BankAccount updateBankAccount(Long iban, BankAccount bankAccount) {
+        BankAccount bankAccountToUpdate = bankAccountRepository.findById(iban)
+                        .orElseThrow(() -> new EntityNotFoundException("Bank account with id " + iban + " not found"));
+        updateBankAccountField(bankAccount.getAbsoluteLimit(), bankAccountToUpdate::setAbsoluteLimit);
+        updateBankAccountField(bankAccount.isAvailable(), bankAccountToUpdate::setAvailable);
+        return bankAccountRepository.save(bankAccount);
     }
 
+    private <T> void updateBankAccountField(T value, Consumer<T> setter) {
+        if (value != null) {
+            setter.accept(value);
+        }
+    }
 }

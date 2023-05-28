@@ -1,9 +1,11 @@
 package nl.inholland.bankapi.controllers;
 
+import lombok.extern.java.Log;
 import nl.inholland.bankapi.models.BankAccount;
 import nl.inholland.bankapi.services.BankAccountService;
 import nl.inholland.bankapi.models.dto.ExceptionDTO;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -11,6 +13,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("bankAccounts")
+@Log
 public class BankAccountController {
     private BankAccountService bankAccountService;
 
@@ -30,6 +33,7 @@ public class BankAccountController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity getAllBankAccounts(@RequestParam(required = false) Integer offset,
                                              @RequestParam(required = false) Integer limit) {
         try {
@@ -68,10 +72,9 @@ public class BankAccountController {
     }
 
     @PutMapping // edit/update
-    public ResponseEntity updateBankAccount(@RequestBody BankAccount bankAccount) {
+    public ResponseEntity updateBankAccount(@PathVariable Long id, @RequestBody BankAccount bankAccount) {
         try {
-            bankAccountService.updateBankAccount(bankAccount);
-            return ResponseEntity.status(204).body(null);
+            return ResponseEntity.status(200).body(bankAccountService.updateBankAccount(id, bankAccount));
         } catch (Exception e) {
             return this.handleException(e);
         }
