@@ -2,7 +2,9 @@ package nl.inholland.bankapi.services;
 
 import jakarta.persistence.EntityNotFoundException;
 
+import nl.inholland.bankapi.models.Role;
 import nl.inholland.bankapi.models.User;
+import nl.inholland.bankapi.models.dto.RegisterDTO;
 import nl.inholland.bankapi.models.dto.UserDTO;
 import nl.inholland.bankapi.repositories.UserRepository;
 import nl.inholland.bankapi.util.JwtTokenProvider;
@@ -132,5 +134,9 @@ public class UserService {
         else {
             throw new javax.naming.AuthenticationException("Invalid password");
         }
+    }
+
+    public User register(RegisterDTO dto){
+        return addUser(new User(dto.email(), dto.password(), dto.firstName(), dto.lastName(), dto.phone(), 0.0, 0.0 , List.of(Role.ROLE_CUSTOMER)));
     }
 }
