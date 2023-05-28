@@ -46,6 +46,17 @@ public class UserController {
 
     }
 
+    @GetMapping("/email/{email}")
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
+    public ResponseEntity getUserByEmail(@PathVariable String  email){
+        try {
+            return ResponseEntity.ok(userService.getUserByEmail(email));
+        } catch (EntityNotFoundException enfe) {
+            return this.handleException(enfe);
+        }
+
+    }
+
     @PostMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity createUser(@RequestBody User user) {
@@ -94,7 +105,7 @@ public class UserController {
         return user.getFirstName() != null && !user.getFirstName().isEmpty()
                 && user.getEmail() != null && !user.getEmail().isEmpty()
                 && user.getPhone() != null && !user.getPhone().isEmpty()
-                && user.getRoles() != null && user.getDayLimit() >0
-                && user.getTransactionLimit()>0;
+                && user.getRoles() != null && user.getDayLimit() > 0
+                && user.getTransactionLimit() > 0;
     }
 }
