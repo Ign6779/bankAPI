@@ -24,7 +24,7 @@ public class BankAccountController {
     // we will need Get Methods -Beth
 
     @GetMapping("/{iban}")
-    public ResponseEntity getBankAccount(@PathVariable long iban) {
+    public ResponseEntity getBankAccount(@PathVariable String iban) {
         try {
             return ResponseEntity.status(200).body(bankAccountService.getBankAccountById(iban));
         } catch (Exception e) {
@@ -72,7 +72,7 @@ public class BankAccountController {
     }
 
     @PutMapping // edit/update
-    public ResponseEntity updateBankAccount(@PathVariable Long id, @RequestBody BankAccount bankAccount) {
+    public ResponseEntity updateBankAccount(@PathVariable String id, @RequestBody BankAccount bankAccount) {
         try {
             return ResponseEntity.status(200).body(bankAccountService.updateBankAccount(id, bankAccount));
         } catch (Exception e) {

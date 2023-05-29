@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -40,7 +41,7 @@ public class BankAccountService {
         return allBankAccounts;
     }
 
-    public BankAccount getBankAccountById(Long iban) {
+    public BankAccount getBankAccountById(String iban) {
         return bankAccountRepository.findById(iban).orElseThrow(EntityNotFoundException::new);
     }
 
@@ -51,10 +52,15 @@ public class BankAccountService {
         return bankAccountRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
     }*/
     public void addBankAccount(BankAccount bankAccount) {
+        String iban;
+        do{
+            iban= generateIban();
+            bankAccount.setIban(iban);
+        }while (!bankAccountRepository.findById(iban).isEmpty());
         bankAccountRepository.save(bankAccount);
     }
 
-    public BankAccount updateBankAccount(Long iban, BankAccount bankAccount) {
+    public BankAccount updateBankAccount(String iban, BankAccount bankAccount) {
         BankAccount bankAccountToUpdate = bankAccountRepository.findById(iban)
                         .orElseThrow(() -> new EntityNotFoundException("Bank account with id " + iban + " not found"));
         updateBankAccountField(bankAccount.getAbsoluteLimit(), bankAccountToUpdate::setAbsoluteLimit);
@@ -66,5 +72,25 @@ public class BankAccountService {
         if (value != null) {
             setter.accept(value);
         }
+    }
+
+    private String generateIban(){
+        String countryCode = "NL";
+        String bankCode = "INHO0";
+        String accountNumber= generateRandomAccountNumber();
+        return countryCode+bankCode+accountNumber;
+    }
+
+    private static String generateRandomAccountNumber() {
+        Random random = new Random();
+        StringBuilder accountNumber = new StringBuilder();
+
+        // Generate 9 random digits
+        for (int i = 0; i < 9; i++) {
+            int digit = random.nextInt(10);
+            accountNumber.append(digit);
+        }
+
+        return accountNumber.toString();
     }
 }
