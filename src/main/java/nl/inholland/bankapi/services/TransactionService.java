@@ -3,6 +3,7 @@ package nl.inholland.bankapi.services;
 import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.bankapi.models.Transaction;
 import nl.inholland.bankapi.models.dto.TransactionDTO;
+import nl.inholland.bankapi.models.dto.UserDTO;
 import nl.inholland.bankapi.repositories.TransactionRepository;
 import org.springframework.stereotype.Service;
 
@@ -67,5 +68,9 @@ public class TransactionService {
         newTransaction.setAmount(dto.getAmount());
 
         return newTransaction;
+    }
+
+    public Transaction getTransactionByAccountFromIban(String iban){
+        return transactionRepository.findTransactionByAccountFromIban(iban).orElseThrow(() -> new EntityNotFoundException("Transaction with account from iban: " + iban + " not found"));
     }
 }

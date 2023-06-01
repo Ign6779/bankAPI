@@ -6,6 +6,7 @@ import nl.inholland.bankapi.models.dto.ExceptionDTO;
 import nl.inholland.bankapi.models.dto.TransactionDTO;
 import nl.inholland.bankapi.services.TransactionService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -81,5 +82,16 @@ public class TransactionController {
     private boolean isTransactionFieldsValid(TransactionDTO transaction) {
         return transaction.getAmount() > 0 && transaction.getAccountTo() != null
                 && transaction.getAccountFrom() != null;
+    }
+
+    @GetMapping("/accountFrom/{iban}")
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
+    public ResponseEntity getTransactionByAccountFrom(@PathVariable String accountFrom){
+        try {
+            return ResponseEntity.ok(transactionService.getTransactionByAccountFromIban(accountFrom));
+        } catch (EntityNotFoundException enfe) {
+            return this.handleException(enfe);
+        }
+
     }
 }
