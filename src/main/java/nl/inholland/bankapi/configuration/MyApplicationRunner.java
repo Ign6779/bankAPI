@@ -8,6 +8,7 @@ import nl.inholland.bankapi.models.User;
 import nl.inholland.bankapi.repositories.BankAccountRepository;
 import nl.inholland.bankapi.repositories.TransactionRepository;
 import nl.inholland.bankapi.repositories.UserRepository;
+import nl.inholland.bankapi.services.BankAccountService;
 import nl.inholland.bankapi.services.UserService;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -22,11 +23,13 @@ public class MyApplicationRunner implements ApplicationRunner {
     private final UserService userService;
     private final BankAccountRepository bankAccountRepository;
     private final TransactionRepository transactionRepository;
+    private final BankAccountService bankAccountService;
 
-    public MyApplicationRunner( BankAccountRepository bankAccountRepository, TransactionRepository transactionRepository , UserService userService) {
+    public MyApplicationRunner( BankAccountRepository bankAccountRepository, TransactionRepository transactionRepository , UserService userService,BankAccountService bankAccountService) {
         this.bankAccountRepository = bankAccountRepository;
         this.transactionRepository = transactionRepository;
         this.userService=userService;
+        this.bankAccountService=bankAccountService;
     }
 
 
@@ -42,17 +45,25 @@ public class MyApplicationRunner implements ApplicationRunner {
 
         ).forEach(user -> userService.addUser(user));
 
-        userService.getAllUsers(null,null, null).forEach(System.out::println);
+        userService.getAllUsers(0,100, true).forEach(System.out::println);
 
 
-        bankAccountRepository.saveAll(List.of(
+//        bankAccountRepository.saveAll(List.of(
+//                new BankAccount(userService.getUserByFirstNameAndLastName("Dude" , "Bli"), 100, 80.9, BankAccount.AccountType.CURRENT),
+//                new BankAccount(userService.getUserByFirstNameAndLastName("Dude", "Bli"), 80.9, 1100.0, BankAccount.AccountType.SAVINGS),
+//                new BankAccount(userService.getUserByFirstNameAndLastName("Lebowski", "de blo"), 80.9, 1000.0, BankAccount.AccountType.CURRENT),
+//                new BankAccount(userService.getUserByFirstNameAndLastName("Lebowski" , "de blo"), 80.9, 1000.0, BankAccount.AccountType.SAVINGS),
+//                new BankAccount(userService.getUserByFirstNameAndLastName("Maude" , "kliblo"), 80.9, 1000.0, BankAccount.AccountType.CURRENT),
+//                new BankAccount(userService.getUserByFirstNameAndLastName("Maude", "kliblo"), 80.9, 1000.0, BankAccount.AccountType.SAVINGS)
+//        ));
+        List.of(
                 new BankAccount(userService.getUserByFirstNameAndLastName("Dude" , "Bli"), 100, 80.9, BankAccount.AccountType.CURRENT),
                 new BankAccount(userService.getUserByFirstNameAndLastName("Dude", "Bli"), 80.9, 1100.0, BankAccount.AccountType.SAVINGS),
                 new BankAccount(userService.getUserByFirstNameAndLastName("Lebowski", "de blo"), 80.9, 1000.0, BankAccount.AccountType.CURRENT),
                 new BankAccount(userService.getUserByFirstNameAndLastName("Lebowski" , "de blo"), 80.9, 1000.0, BankAccount.AccountType.SAVINGS),
                 new BankAccount(userService.getUserByFirstNameAndLastName("Maude" , "kliblo"), 80.9, 1000.0, BankAccount.AccountType.CURRENT),
                 new BankAccount(userService.getUserByFirstNameAndLastName("Maude", "kliblo"), 80.9, 1000.0, BankAccount.AccountType.SAVINGS)
-        ));
+        ).forEach(bankAccount -> bankAccountService.addBankAccount(bankAccount));
 
         bankAccountRepository.findAll().forEach(System.out::println);
 

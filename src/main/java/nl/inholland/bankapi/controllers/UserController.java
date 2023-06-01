@@ -23,11 +23,11 @@ public class UserController {
     // we will need Get Methods -Beth
     @GetMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public ResponseEntity getAllUsers(@RequestParam(required = false) Integer offset,
-    @RequestParam(required = false) Integer limit,
+    public ResponseEntity getAllUsers(@RequestParam(required = false , defaultValue = "0") Integer page,
+    @RequestParam(required = false,defaultValue = "100") Integer size,
     @RequestParam(required = false) Boolean hasAccount){
         try {
-            return ResponseEntity.ok(userService.getAllUsers( offset,  limit,  hasAccount));
+            return ResponseEntity.ok(userService.getAllUsers( page, size,  hasAccount));
         }
         catch (Exception e){
             return  this.handleException(e);

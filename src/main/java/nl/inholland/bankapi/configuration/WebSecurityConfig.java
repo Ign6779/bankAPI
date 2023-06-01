@@ -45,7 +45,7 @@ public class WebSecurityConfig  {
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/users/**").authenticated()
                 .requestMatchers("/transactions").authenticated()
-                .requestMatchers("/bankAccounts").authenticated();
+                .requestMatchers("/bankAccounts/**").authenticated();
 
         httpSecurity.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.cors(Customizer.withDefaults()).build();
