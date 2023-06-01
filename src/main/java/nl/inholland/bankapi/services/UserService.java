@@ -41,10 +41,6 @@ public class UserService {
     }
 
     public List<UserDTO> getAllUsers(Integer page, Integer size, Boolean hasAccount){
-        if( page ==null && size == null){
-            page=0;
-            size=100;
-        }
         PageRequest pageable= PageRequest.of(page, size);
         if (hasAccount !=null && hasAccount==false){
             return userRepository.findAllByBankAccountsIsNull(pageable).getContent().stream().map(user -> mapDtoToUser(user)).toList();

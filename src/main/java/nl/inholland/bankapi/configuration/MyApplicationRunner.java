@@ -45,7 +45,7 @@ public class MyApplicationRunner implements ApplicationRunner {
 
         ).forEach(user -> userService.addUser(user));
 
-        userService.getAllUsers(null,null, null).forEach(System.out::println);
+        userService.getAllUsers(0,100, true).forEach(System.out::println);
 
 
 //        bankAccountRepository.saveAll(List.of(

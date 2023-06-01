@@ -71,10 +71,11 @@ public class BankAccountController {
         }
     }
 
-    @PutMapping // edit/update
-    public ResponseEntity updateBankAccount(@PathVariable String id, @RequestBody BankAccount bankAccount) {
+    @PutMapping ("/{iban}")// edit/update
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity updateBankAccount(@PathVariable String iban, @RequestBody BankAccount bankAccount) {
         try {
-            return ResponseEntity.status(200).body(bankAccountService.updateBankAccount(id, bankAccount));
+            return ResponseEntity.status(200).body(bankAccountService.updateBankAccount(iban, bankAccount));
         } catch (Exception e) {
             return this.handleException(e);
         }

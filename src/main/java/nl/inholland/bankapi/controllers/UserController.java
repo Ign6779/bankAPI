@@ -27,7 +27,7 @@ public class UserController {
     @RequestParam(required = false,defaultValue = "100") Integer size,
     @RequestParam(required = false) Boolean hasAccount){
         try {
-            return ResponseEntity.ok(userService.getAllUsers( page,  size,  hasAccount));
+            return ResponseEntity.ok(userService.getAllUsers( page, size,  hasAccount));
         }
         catch (Exception e){
             return  this.handleException(e);

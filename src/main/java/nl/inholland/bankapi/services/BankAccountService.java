@@ -65,7 +65,7 @@ public class BankAccountService {
                         .orElseThrow(() -> new EntityNotFoundException("Bank account with id " + iban + " not found"));
         updateBankAccountField(bankAccount.getAbsoluteLimit(), bankAccountToUpdate::setAbsoluteLimit);
         updateBankAccountField(bankAccount.isAvailable(), bankAccountToUpdate::setAvailable);
-        return bankAccountRepository.save(bankAccount);
+        return bankAccountRepository.save(bankAccountToUpdate );
     }
 
     private <T> void updateBankAccountField(T value, Consumer<T> setter) {
