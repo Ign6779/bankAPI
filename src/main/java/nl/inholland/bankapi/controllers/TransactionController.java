@@ -1,14 +1,11 @@
 package nl.inholland.bankapi.controllers;
 
-import jakarta.persistence.EntityNotFoundException;
-import nl.inholland.bankapi.models.Transaction;
 import nl.inholland.bankapi.models.dto.ExceptionDTO;
 import nl.inholland.bankapi.models.dto.TransactionDTO;
 import nl.inholland.bankapi.services.TransactionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.UUID;
 
 @RestController
@@ -32,10 +29,10 @@ public class TransactionController {
     }*/
 
     @GetMapping
-    public ResponseEntity getAllTransactions(@RequestParam(required = false) Integer offset,
-                                             @RequestParam(required = false) Integer limit){
+    public ResponseEntity getAllTransactions(@RequestParam(required = false,defaultValue = "0") Integer page,
+                                             @RequestParam(required = false,defaultValue = "100") Integer size){
         try {
-            return ResponseEntity.ok(transactionService.getAllTransactions(offset,  limit));
+            return ResponseEntity.ok(transactionService.getAllTransactions(page, size));
         }
         catch (Exception e){
             return  this.handleException(e);
