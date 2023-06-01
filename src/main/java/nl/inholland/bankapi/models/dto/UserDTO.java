@@ -22,5 +22,4 @@ public class UserDTO {
     private double dayLimit;
     private double transactionLimit;
     private List<BankAccount> bankAccounts;
-
 }
