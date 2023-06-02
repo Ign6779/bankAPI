@@ -1,8 +1,10 @@
 package nl.inholland.bankapi.services;
 
 import jakarta.persistence.EntityNotFoundException;
+import nl.inholland.bankapi.models.BankAccount;
 import nl.inholland.bankapi.models.Transaction;
 import nl.inholland.bankapi.models.dto.TransactionDTO;
+import nl.inholland.bankapi.models.dto.UserDTO;
 import nl.inholland.bankapi.repositories.TransactionRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -18,14 +20,25 @@ public class TransactionService {
     public TransactionService(TransactionRepository transactionRepository){
         this.transactionRepository = transactionRepository;
     }
-
-    public List<Transaction> getAllTransactions(Integer page, Integer size){
+  
+    public List<TransactionDTO> getAllTransactions(Integer page, Integer size, BankAccount accountFrom) {
         PageRequest pageable = PageRequest.of(page, size);
-        return transactionRepository.findAll(pageable).getContent();
+        if (accountFrom != null) {
+            return transactionRepository.findByAccountFrom(accountFrom, pageable)
+                    .getContent()
+                    .stream()
+                    .map(transaction -> mapDtoToTransaction(transaction))
+                    .toList();
+        }
+        return transactionRepository.findAll(pageable)
+                .getContent()
+                .stream()
+                .map(transaction -> mapDtoToTransaction(transaction))
+                .toList();
     }
 
-    public Transaction addTransaction(TransactionDTO dto) {
-        return transactionRepository.save(this.mapDtoToTransaction(dto));
+    public Transaction addTransaction(Transaction transaction) {
+        return transactionRepository.save(transaction);
     }
 
     public Transaction getTransactionById(UUID id) {
@@ -46,13 +59,14 @@ public class TransactionService {
         return transactionRepository.save(transactionToUpdate);
     }
 
-    private Transaction mapDtoToTransaction(TransactionDTO dto) {
-        Transaction newTransaction = new Transaction();
+    private TransactionDTO mapDtoToTransaction(Transaction transaction){
+        TransactionDTO dto = new TransactionDTO();
+        dto.setAccountFrom(transaction.getAccountFrom());
+        dto.setAccountTo(transaction.getAccountTo());
+        dto.setAmount(transaction.getAmount());
 
-        newTransaction.setAccountFrom(dto.getAccountFrom());
-        newTransaction.setAccountTo(dto.getAccountTo());
-        newTransaction.setAmount(dto.getAmount());
-
-        return newTransaction;
+        return dto;
     }
+
+
 }
