@@ -1,7 +1,5 @@
 package nl.inholland.bankapi.controllers;
 
-
-import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.bankapi.models.BankAccount;
 import nl.inholland.bankapi.models.Transaction;
 import nl.inholland.bankapi.models.dto.ExceptionDTO;
@@ -25,16 +23,6 @@ public class TransactionController {
         this.transactionService = transactionService;
         this.bankAccountService = bankAccountService;
     }
-
-    /*@GetMapping
-    public ResponseEntity getAllTransactions(){
-        try {
-            return ResponseEntity.ok(transactionService.getAllTransactions());
-        }
-        catch (Exception e){
-            return  this.handleException(e);
-        }
-    }*/
 
     @GetMapping
     public ResponseEntity getAllTransactions(
