@@ -30,8 +30,5 @@ public class BankAccount {
     private AccountType type;
     private boolean available;
 
-    public enum AccountType {
-        CURRENT,
-        SAVINGS
-    }
+
 }

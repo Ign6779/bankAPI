@@ -1,13 +1,18 @@
 package nl.inholland.bankapi.services;
 
 import jakarta.persistence.EntityNotFoundException;
+import nl.inholland.bankapi.models.AccountType;
 import nl.inholland.bankapi.models.BankAccount;
+import nl.inholland.bankapi.models.Role;
 import nl.inholland.bankapi.models.Transaction;
+import nl.inholland.bankapi.models.dto.SearchDTO;
 import nl.inholland.bankapi.repositories.BankAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -22,30 +27,34 @@ public class BankAccountService {
         this.bankAccountRepository=bankAccountRepository;
     }
 
-    public List<BankAccount> getAllBankAccounts(Integer offset, Integer limit) {
-        List<BankAccount> allBankAccounts = (List<BankAccount>) bankAccountRepository.findAll();
-
-        // Apply filtering based on the provided parameters
-        if (offset != null && offset > 0) {
-            allBankAccounts = allBankAccounts.stream()
-                    .skip(offset)
-                    .collect(Collectors.toList());
-        }
-
-        if (limit != null && limit > 0) {
-            allBankAccounts = allBankAccounts.stream()
-                    .limit(limit)
-                    .collect(Collectors.toList());
-        }
-
-        return allBankAccounts;
+    public List<BankAccount> getAllBankAccounts(Integer page, Integer size) {
+        PageRequest pageable = PageRequest.of(page, size);
+        return bankAccountRepository.findAll(pageable).getContent().stream().filter(bankAccount -> bankAccount.getType().equals(AccountType.CURRENT) || bankAccount.getType().equals(AccountType.SAVINGS)).collect(Collectors.toList());
     }
 
     public BankAccount getBankAccountById(String iban) {
         return bankAccountRepository.findById(iban).orElseThrow(EntityNotFoundException::new);
     }
 
-/*    public BankAccount getBankAccountByUserName(String userName) {
+    public List<BankAccount> getBankAccountByUserFullName(SearchDTO searchDTO) {
+        Optional<BankAccount> bankAccounts = bankAccountRepository.findBankAccountByUserFirstNameIgnoreCaseAndUserLastNameIgnoreCaseAndType(searchDTO.firstName(), searchDTO.lastName(), AccountType.CURRENT);
+        if (!bankAccounts.isEmpty()) {
+            return bankAccounts.stream()
+                    .filter(bankAccount -> bankAccount.getType() == AccountType.CURRENT)
+                    .collect(Collectors.toList());
+        } else {
+            throw new EntityNotFoundException("Bank account with user first name and last name: " + searchDTO.firstName() + " " + searchDTO.lastName() + " not found");
+        }
+    }
+
+
+
+
+
+
+
+
+    /*    public BankAccount getBankAccountByUserName(String userName) {
         return bankAccountRepository.findByUserName(userName).orElseThrow(EntityNotFoundException::new);
     }
     public BankAccount getBankAccountByUserId(long userId) {
@@ -54,7 +63,11 @@ public class BankAccountService {
     public void addBankAccount(BankAccount bankAccount) {
         String iban;
         do{
-            iban= generateIban();
+            if(bankAccount.getType().equals(AccountType.BANK)){
+                iban="NL01INHO0000000001";
+            }else {
+                iban= generateIban();
+            }
             bankAccount.setIban(iban);
         }while (!bankAccountRepository.findById(iban).isEmpty());
         bankAccountRepository.save(bankAccount);

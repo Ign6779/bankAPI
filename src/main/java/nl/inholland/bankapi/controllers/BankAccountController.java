@@ -2,6 +2,8 @@ package nl.inholland.bankapi.controllers;
 
 import lombok.extern.java.Log;
 import nl.inholland.bankapi.models.BankAccount;
+import nl.inholland.bankapi.models.dto.SearchBankAccountDTO;
+import nl.inholland.bankapi.models.dto.SearchDTO;
 import nl.inholland.bankapi.services.BankAccountService;
 import nl.inholland.bankapi.models.dto.ExceptionDTO;
 import org.springframework.http.ResponseEntity;
@@ -34,11 +36,21 @@ public class BankAccountController {
 
     @GetMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public ResponseEntity getAllBankAccounts(@RequestParam(required = false) Integer offset,
-                                             @RequestParam(required = false) Integer limit) {
+    public ResponseEntity getAllBankAccounts(@RequestParam(required = false,defaultValue = "0") Integer page,
+                                             @RequestParam(required = false,defaultValue = "100") Integer size) {
         try {
-            return ResponseEntity.status(200).body(bankAccountService.getAllBankAccounts(offset, limit));
+            return ResponseEntity.status(200).body(bankAccountService.getAllBankAccounts(page, size));
         } catch (Exception e) {
+            return this.handleException(e);
+        }
+    }
+
+    @PostMapping("/search")
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
+    public ResponseEntity getIbanByUserFullName(@RequestBody SearchDTO searchDTO){
+        try{
+            return ResponseEntity.status(200).body( bankAccountService.getBankAccountByUserFullName(searchDTO).stream().map(bankAccount -> mapBankAccountToSearchBankAccountDTO(bankAccount)));
+        }catch (Exception e){
             return this.handleException(e);
         }
     }
@@ -88,5 +100,11 @@ public class BankAccountController {
     private ResponseEntity handleException(Exception e) {
         ExceptionDTO dto = new ExceptionDTO(e.getClass().getName(), e.getMessage());
         return ResponseEntity.status(400).body(dto);
+    }
+
+    private SearchBankAccountDTO mapBankAccountToSearchBankAccountDTO(BankAccount bankAccount){
+        SearchBankAccountDTO searchBankAccountDTO= new SearchBankAccountDTO();
+        searchBankAccountDTO.setIban(bankAccount.getIban());
+        return  searchBankAccountDTO;
     }
 }

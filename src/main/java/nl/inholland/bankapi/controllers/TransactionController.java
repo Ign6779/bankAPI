@@ -1,5 +1,6 @@
 package nl.inholland.bankapi.controllers;
 
+
 import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.bankapi.models.BankAccount;
 import nl.inholland.bankapi.models.Transaction;
@@ -11,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.UUID;
 
 @RestController

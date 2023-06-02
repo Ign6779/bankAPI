@@ -20,7 +20,7 @@ public class TransactionService {
     public TransactionService(TransactionRepository transactionRepository){
         this.transactionRepository = transactionRepository;
     }
-
+  
     public List<TransactionDTO> getAllTransactions(Integer page, Integer size, BankAccount accountFrom) {
         PageRequest pageable = PageRequest.of(page, size);
         if (accountFrom != null) {
