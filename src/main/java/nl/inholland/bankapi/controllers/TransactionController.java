@@ -1,9 +1,11 @@
 package nl.inholland.bankapi.controllers;
 
 import jakarta.persistence.EntityNotFoundException;
+import nl.inholland.bankapi.models.BankAccount;
 import nl.inholland.bankapi.models.Transaction;
 import nl.inholland.bankapi.models.dto.ExceptionDTO;
 import nl.inholland.bankapi.models.dto.TransactionDTO;
+import nl.inholland.bankapi.services.BankAccountService;
 import nl.inholland.bankapi.services.TransactionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,9 +19,11 @@ import java.util.UUID;
 
 public class TransactionController {
     private TransactionService transactionService;
+    private BankAccountService bankAccountService;
 
-    public TransactionController(TransactionService transactionService){
+    public TransactionController(TransactionService transactionService, BankAccountService bankAccountService){
         this.transactionService = transactionService;
+        this.bankAccountService = bankAccountService;
     }
 
     /*@GetMapping
@@ -33,18 +37,24 @@ public class TransactionController {
     }*/
 
     @GetMapping
-    public ResponseEntity getAllTransactions(@RequestParam(required = false) Integer offset,
-                                             @RequestParam(required = false) Integer limit){
+    public ResponseEntity getAllTransactions(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "100") Integer size,
+            @RequestParam(required = false) String accountFrom) {
         try {
-            return ResponseEntity.ok(transactionService.getAllTransactions(offset,  limit));
-        }
-        catch (Exception e){
-            return  this.handleException(e);
+            BankAccount bankAccount = null;
+            if (accountFrom != null) {
+                bankAccount = bankAccountService.getBankAccountById(accountFrom);
+            }
+            return ResponseEntity.ok(transactionService.getAllTransactions(page, size, bankAccount));
+        } catch (Exception e) {
+            return this.handleException(e);
         }
     }
 
+
     @PostMapping
-    public ResponseEntity createTransaction(@RequestBody TransactionDTO transaction) {
+    public ResponseEntity createTransaction(@RequestBody Transaction transaction) {
         try {
             if(isTransactionFieldsValid(transaction)){
                 transactionService.addTransaction(transaction);
@@ -79,19 +89,8 @@ public class TransactionController {
         return ResponseEntity.status(400).body(dto);
     }
 
-    private boolean isTransactionFieldsValid(TransactionDTO transaction) {
+    private boolean isTransactionFieldsValid(Transaction transaction) {
         return transaction.getAmount() > 0 && transaction.getAccountTo() != null
                 && transaction.getAccountFrom() != null;
-    }
-
-    @GetMapping("/accountFrom/{iban}")
-    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
-    public ResponseEntity getTransactionByAccountFrom(@PathVariable String accountFrom){
-        try {
-            return ResponseEntity.ok(transactionService.getTransactionByAccountFromIban(accountFrom));
-        } catch (EntityNotFoundException enfe) {
-            return this.handleException(enfe);
-        }
-
     }
 }

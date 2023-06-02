@@ -1,10 +1,12 @@
 package nl.inholland.bankapi.services;
 
 import jakarta.persistence.EntityNotFoundException;
+import nl.inholland.bankapi.models.BankAccount;
 import nl.inholland.bankapi.models.Transaction;
 import nl.inholland.bankapi.models.dto.TransactionDTO;
 import nl.inholland.bankapi.models.dto.UserDTO;
 import nl.inholland.bankapi.repositories.TransactionRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,27 +21,24 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
     }
 
-    public List<Transaction> getAllTransactions(Integer offset, Integer limit){
-        List<Transaction> allTransactions = (List<Transaction>) transactionRepository.findAll();
-
-        // Apply filtering based on the provided parameters
-        if (offset != null && offset > 0) {
-            allTransactions = allTransactions.stream()
-                    .skip(offset)
-                    .collect(Collectors.toList());
+    public List<TransactionDTO> getAllTransactions(Integer page, Integer size, BankAccount accountFrom) {
+        PageRequest pageable = PageRequest.of(page, size);
+        if (accountFrom != null) {
+            return transactionRepository.findByAccountFrom(accountFrom, pageable)
+                    .getContent()
+                    .stream()
+                    .map(transaction -> mapDtoToTransaction(transaction))
+                    .toList();
         }
-
-        if (limit != null && limit > 0) {
-            allTransactions = allTransactions.stream()
-                    .limit(limit)
-                    .collect(Collectors.toList());
-        }
-
-        return allTransactions;
+        return transactionRepository.findAll(pageable)
+                .getContent()
+                .stream()
+                .map(transaction -> mapDtoToTransaction(transaction))
+                .toList();
     }
 
-    public Transaction addTransaction(TransactionDTO dto) {
-        return transactionRepository.save(this.mapDtoToTransaction(dto));
+    public Transaction addTransaction(Transaction transaction) {
+        return transactionRepository.save(transaction);
     }
 
     public Transaction getTransactionById(UUID id) {
@@ -60,17 +59,14 @@ public class TransactionService {
         return transactionRepository.save(transactionToUpdate);
     }
 
-    private Transaction mapDtoToTransaction(TransactionDTO dto) {
-        Transaction newTransaction = new Transaction();
+    private TransactionDTO mapDtoToTransaction(Transaction transaction){
+        TransactionDTO dto = new TransactionDTO();
+        dto.setAccountFrom(transaction.getAccountFrom());
+        dto.setAccountTo(transaction.getAccountTo());
+        dto.setAmount(transaction.getAmount());
 
-        newTransaction.setAccountFrom(dto.getAccountFrom());
-        newTransaction.setAccountTo(dto.getAccountTo());
-        newTransaction.setAmount(dto.getAmount());
-
-        return newTransaction;
+        return dto;
     }
 
-    public Transaction getTransactionByAccountFromIban(String iban){
-        return transactionRepository.findTransactionByAccountFromIban(iban).orElseThrow(() -> new EntityNotFoundException("Transaction with account from iban: " + iban + " not found"));
-    }
+
 }

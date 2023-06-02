@@ -74,7 +74,11 @@ public class MyApplicationRunner implements ApplicationRunner {
                 new Transaction(LocalDate.of(2023, 1, 1), bankAccounts.get(2), bankAccounts.get(1), 100.0, "1cfc38d6-e378-11ed-b5ea-0242ac120002"),
                 new Transaction(LocalDate.of(2023, 1, 1), bankAccounts.get(3), bankAccounts.get(1), 100.0, "1cfc38d6-e378-11ed-b5ea-0242ac120002"),
                 new Transaction(LocalDate.of(2023, 1, 1), bankAccounts.get(4), bankAccounts.get(1), 100.0, "1cfc38d6-e378-11ed-b5ea-0242ac120002"),
-                new Transaction(LocalDate.of(2023, 1, 1), bankAccounts.get(5), bankAccounts.get(1), 100.0, "1cfc38d6-e378-11ed-b5ea-0242ac120002")
+                new Transaction(LocalDate.of(2023, 1, 1), bankAccounts.get(5), bankAccounts.get(1), 100.0, "1cfc38d6-e378-11ed-b5ea-0242ac120002"),
+
+
+        new Transaction(LocalDate.of(2023, 2, 2), bankAccounts.get(0), bankAccounts.get(1), 100.0, "1cfc38d6-e378-11ed-b5ea-0242ac120002")
+
 
         ));
         transactionRepository.findAll().forEach(System.out::println);
