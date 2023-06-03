@@ -21,10 +21,17 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
     }
   
-    public List<TransactionDTO> getAllTransactions(Integer page, Integer size, BankAccount accountFrom) {
+    public List<TransactionDTO> getAllTransactions(Integer page, Integer size, BankAccount accountFrom, BankAccount accountTo) {
         PageRequest pageable = PageRequest.of(page, size);
         if (accountFrom != null) {
             return transactionRepository.findByAccountFrom(accountFrom, pageable)
+                    .getContent()
+                    .stream()
+                    .map(transaction -> mapDtoToTransaction(transaction))
+                    .toList();
+        }
+        if (accountTo != null) {
+            return transactionRepository.findByAccountTo(accountTo, pageable)
                     .getContent()
                     .stream()
                     .map(transaction -> mapDtoToTransaction(transaction))
@@ -64,6 +71,7 @@ public class TransactionService {
         dto.setAccountFrom(transaction.getAccountFrom());
         dto.setAccountTo(transaction.getAccountTo());
         dto.setAmount(transaction.getAmount());
+        dto.setTimeStamp(transaction.getTimeStamp());
 
         return dto;
     }

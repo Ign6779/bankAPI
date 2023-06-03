@@ -14,4 +14,5 @@ public class TransactionDTO {
     private BankAccount accountFrom;
     private BankAccount accountTo;
     private double amount;
+    private LocalDate timeStamp;
 }
