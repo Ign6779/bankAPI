@@ -28,18 +28,25 @@ public class TransactionController {
     public ResponseEntity getAllTransactions(
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "100") Integer size,
-            @RequestParam(required = false) String accountFrom) {
+            @RequestParam(required = false) String accountFrom,
+            @RequestParam(required = false) String accountTo) {
         try {
-            BankAccount bankAccount = null;
+            BankAccount bankAccountFrom = null;
+            BankAccount bankAccountTo = null;
+
             if (accountFrom != null) {
-                bankAccount = bankAccountService.getBankAccountById(accountFrom);
+                bankAccountFrom = bankAccountService.getBankAccountById(accountFrom);
             }
-            return ResponseEntity.ok(transactionService.getAllTransactions(page, size, bankAccount));
+
+            if (accountTo != null) {
+                bankAccountTo = bankAccountService.getBankAccountById(accountTo);
+            }
+
+            return ResponseEntity.ok(transactionService.getAllTransactions(page, size, bankAccountFrom, bankAccountTo));
         } catch (Exception e) {
             return this.handleException(e);
         }
     }
-
 
     @PostMapping
     public ResponseEntity createTransaction(@RequestBody Transaction transaction) {

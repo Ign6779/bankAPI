@@ -16,5 +16,6 @@ import java.util.UUID;
 public interface TransactionRepository extends CrudRepository<Transaction, UUID> {
 
     Page<Transaction> findByAccountFrom(BankAccount accountFrom, Pageable pageable);
+    Page<Transaction> findByAccountTo(BankAccount accountFrom, Pageable pageable);
     Page <Transaction> findAll(Pageable pageable);
 }
