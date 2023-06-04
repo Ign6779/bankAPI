@@ -1,6 +1,7 @@
 package nl.inholland.bankapi.services;
 
 import jakarta.persistence.EntityNotFoundException;
+import nl.inholland.bankapi.models.AccountType;
 import nl.inholland.bankapi.models.BankAccount;
 import nl.inholland.bankapi.models.Transaction;
 import nl.inholland.bankapi.models.dto.TransactionDTO;
@@ -45,6 +46,26 @@ public class TransactionService {
     }
 
     public Transaction addTransaction(Transaction transaction) {
+        if(transaction.getAccountFrom().getBalance() < transaction.getAmount()){
+            throw new IllegalArgumentException("Insufficient funds");
+        } else if (transaction.getAccountFrom().getBalance() < 0) {
+            throw new IllegalArgumentException("Balance cannot be negative");
+        } else if (transaction.getAccountFrom().equals(transaction.getAccountTo())) {
+            throw new IllegalArgumentException("Cannot transfer to the same account");
+        } else if (transaction.getAccountFrom().getAbsoluteLimit() < transaction.getAmount()) {
+            throw new IllegalArgumentException("Amount exceeds absolute limit");
+        } else if (transaction.getAccountFrom().getUser().getTransactionLimit()<transaction.getAmount()) {
+            throw new IllegalArgumentException("Amount exceeds transaction limit");
+        } else if (transaction.getAccountFrom().getType()== AccountType.SAVINGS && transaction.getAccountTo().getType()== AccountType.CURRENT
+        && transaction.getAccountFrom().getUser()!=transaction.getAccountTo().getUser()) {
+            throw new IllegalArgumentException("Cannot transfer from savings to current account of another user");
+        } else if (transaction.getAccountFrom().getType()== AccountType.CURRENT && transaction.getAccountTo().getType()== AccountType.SAVINGS
+            && transaction.getAccountFrom().getUser()!=transaction.getAccountTo().getUser()) {
+            throw new IllegalArgumentException("Cannot transfer from current to savings account of another user");
+        } else {
+            transaction.getAccountFrom().setBalance(transaction.getAccountFrom().getBalance() - transaction.getAmount());
+            transaction.getAccountTo().setBalance(transaction.getAccountTo().getBalance() + transaction.getAmount());
+        }
         return transactionRepository.save(transaction);
     }
 
