@@ -2,15 +2,14 @@ package nl.inholland.bankapi.controllers;
 
 import lombok.extern.java.Log;
 import nl.inholland.bankapi.models.BankAccount;
-import nl.inholland.bankapi.models.dto.SearchBankAccountDTO;
-import nl.inholland.bankapi.models.dto.SearchDTO;
+import nl.inholland.bankapi.models.User;
+import nl.inholland.bankapi.models.dto.*;
 import nl.inholland.bankapi.services.BankAccountService;
-import nl.inholland.bankapi.models.dto.ExceptionDTO;
+import nl.inholland.bankapi.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.UUID;
 
 @RestController
@@ -18,9 +17,11 @@ import java.util.UUID;
 @Log
 public class BankAccountController {
     private BankAccountService bankAccountService;
+    private UserService userService;
 
-    public BankAccountController (BankAccountService bankAccountService){
+    public BankAccountController(BankAccountService bankAccountService, UserService userService) {
         this.bankAccountService = bankAccountService;
+        this.userService = userService;
     }
 
     // we will need Get Methods -Beth
@@ -36,8 +37,8 @@ public class BankAccountController {
 
     @GetMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public ResponseEntity getAllBankAccounts(@RequestParam(required = false,defaultValue = "0") Integer page,
-                                             @RequestParam(required = false,defaultValue = "100") Integer size) {
+    public ResponseEntity getAllBankAccounts(@RequestParam(required = false, defaultValue = "0") Integer page,
+                                             @RequestParam(required = false, defaultValue = "100") Integer size) {
         try {
             return ResponseEntity.status(200).body(bankAccountService.getAllBankAccounts(page, size));
         } catch (Exception e) {
@@ -47,10 +48,10 @@ public class BankAccountController {
 
     @PostMapping("/search")
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
-    public ResponseEntity getIbanByUserFullName(@RequestBody SearchDTO searchDTO){
-        try{
-            return ResponseEntity.status(200).body( bankAccountService.getBankAccountByUserFullName(searchDTO).stream().map(bankAccount -> mapBankAccountToSearchBankAccountDTO(bankAccount)));
-        }catch (Exception e){
+    public ResponseEntity getIbanByUserFullName(@RequestBody SearchDTO searchDTO) {
+        try {
+            return ResponseEntity.status(200).body(bankAccountService.getBankAccountByUserFullName(searchDTO).stream().map(bankAccount -> mapBankAccountToSearchBankAccountDTO(bankAccount)));
+        } catch (Exception e) {
             return this.handleException(e);
         }
     }
@@ -74,16 +75,17 @@ public class BankAccountController {
     }*/
 
     @PostMapping // create/add
-    public ResponseEntity addBankAccount(@RequestBody BankAccount bankAccount) {
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public Object addBankAccount(@RequestBody BankAccountDTO dto, @RequestBody UUID userID) throws Exception {
         try {
-            bankAccountService.addBankAccount(bankAccount);
-            return ResponseEntity.status(201).body(null);
+            UserDTO user = userService.getUserById(userID);
+            return bankAccountService.createBankAccount(dto, user);
         } catch (Exception e) {
             return this.handleException(e);
         }
     }
 
-    @PutMapping ("/{iban}")// edit/update
+    @PutMapping("/{iban}")// edit/update
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity updateBankAccount(@PathVariable String iban, @RequestBody BankAccount bankAccount) {
         try {
@@ -102,9 +104,9 @@ public class BankAccountController {
         return ResponseEntity.status(400).body(dto);
     }
 
-    private SearchBankAccountDTO mapBankAccountToSearchBankAccountDTO(BankAccount bankAccount){
-        SearchBankAccountDTO searchBankAccountDTO= new SearchBankAccountDTO();
+    private SearchBankAccountDTO mapBankAccountToSearchBankAccountDTO(BankAccount bankAccount) {
+        SearchBankAccountDTO searchBankAccountDTO = new SearchBankAccountDTO();
         searchBankAccountDTO.setIban(bankAccount.getIban());
-        return  searchBankAccountDTO;
+        return searchBankAccountDTO;
     }
 }

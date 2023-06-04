@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nl.inholland.bankapi.models.dto.UserDTO;
 
 @Entity
 @Data
@@ -15,9 +16,9 @@ public class BankAccount {
 
     @ManyToOne
     @JsonBackReference
-    private User user;
+    private UserDTO user;
 
-    public BankAccount(User user, double absoluteLimit, double balance, AccountType type) {
+    public BankAccount(UserDTO user, double absoluteLimit, double balance, AccountType type) {
         this.user = user;
         this.absoluteLimit = absoluteLimit;
         this.balance = balance;
