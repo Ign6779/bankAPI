@@ -3,9 +3,10 @@ package nl.inholland.bankapi.services;
 import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.bankapi.models.AccountType;
 import nl.inholland.bankapi.models.BankAccount;
-import nl.inholland.bankapi.models.Role;
-import nl.inholland.bankapi.models.Transaction;
+import nl.inholland.bankapi.models.User;
+import nl.inholland.bankapi.models.dto.BankAccountDTO;
 import nl.inholland.bankapi.models.dto.SearchDTO;
+import nl.inholland.bankapi.models.dto.UserDTO;
 import nl.inholland.bankapi.repositories.BankAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -60,7 +61,7 @@ public class BankAccountService {
     public BankAccount getBankAccountByUserId(long userId) {
         return bankAccountRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
     }*/
-    public void addBankAccount(BankAccount bankAccount) {
+    public BankAccount addBankAccount(BankAccount bankAccount) {
         String iban;
         do{
             if(bankAccount.getType().equals(AccountType.BANK)){
@@ -70,7 +71,14 @@ public class BankAccountService {
             }
             bankAccount.setIban(iban);
         }while (!bankAccountRepository.findById(iban).isEmpty());
-        bankAccountRepository.save(bankAccount);
+        return bankAccountRepository.save(bankAccount);
+    }
+
+    public BankAccount createBankAccount(BankAccountDTO dto, UserDTO user){
+        dto.setUser(user);
+        return addBankAccount(new BankAccount(
+            dto.getUser(), dto.getAbsoluteLimit(), dto.getBalance(), dto.getType())
+    );
     }
 
     public BankAccount updateBankAccount(String iban, BankAccount bankAccount) {
