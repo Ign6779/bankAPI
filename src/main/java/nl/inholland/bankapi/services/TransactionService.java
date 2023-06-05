@@ -52,10 +52,12 @@ public class TransactionService {
             throw new IllegalArgumentException("Balance cannot be negative");
         } else if (transaction.getAccountFrom().equals(transaction.getAccountTo())) {
             throw new IllegalArgumentException("Cannot transfer to the same account");
-        } else if (transaction.getAccountFrom().getAbsoluteLimit() < transaction.getAmount()) {
-            throw new IllegalArgumentException("Amount exceeds absolute limit");
+        } else if (transaction.getAccountFrom().getAbsoluteLimit() > transaction.getAccountFrom().getBalance() - transaction.getAmount()) {
+            throw new IllegalArgumentException("Account balance falls below absolute limit");
         } else if (transaction.getAccountFrom().getUser().getTransactionLimit()<transaction.getAmount()) {
             throw new IllegalArgumentException("Amount exceeds transaction limit");
+        } else if (transaction.getAccountFrom().getUser().getDayLimit()<transaction.getAmount()) {
+            throw new IllegalArgumentException("Amount exceeds day limit");
         } else if (transaction.getAccountFrom().getType()== AccountType.SAVINGS && transaction.getAccountTo().getType()== AccountType.CURRENT
         && transaction.getAccountFrom().getUser()!=transaction.getAccountTo().getUser()) {
             throw new IllegalArgumentException("Cannot transfer from savings to current account of another user");
