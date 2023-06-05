@@ -24,7 +24,6 @@ public class Transaction {
     @ManyToOne
     private BankAccount accountTo;
     private double amount;
-
     private String performingUser;
 
     public Transaction(LocalDate timeStamp, BankAccount accountFrom, BankAccount accountTo, double amount, String performingUser) {
