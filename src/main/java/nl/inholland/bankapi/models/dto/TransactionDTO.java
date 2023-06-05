@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import nl.inholland.bankapi.models.BankAccount;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,5 +15,5 @@ public class TransactionDTO {
     private BankAccount accountFrom;
     private BankAccount accountTo;
     private double amount;
-    private LocalDate timeStamp;
+    private LocalDateTime timeStamp;
 }

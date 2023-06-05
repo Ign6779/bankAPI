@@ -16,9 +16,9 @@ public class BankAccount {
 
     @ManyToOne
     @JsonBackReference
-    private UserDTO user;
+    private User user;
 
-    public BankAccount(UserDTO user, double absoluteLimit, double balance, AccountType type) {
+    public BankAccount(User user, double absoluteLimit, double balance, AccountType type) {
         this.user = user;
         this.absoluteLimit = absoluteLimit;
         this.balance = balance;

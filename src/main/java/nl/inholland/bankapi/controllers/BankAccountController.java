@@ -1,8 +1,8 @@
 package nl.inholland.bankapi.controllers;
 
+import lombok.Data;
 import lombok.extern.java.Log;
 import nl.inholland.bankapi.models.BankAccount;
-import nl.inholland.bankapi.models.User;
 import nl.inholland.bankapi.models.dto.*;
 import nl.inholland.bankapi.services.BankAccountService;
 import nl.inholland.bankapi.services.UserService;
@@ -16,8 +16,8 @@ import java.util.UUID;
 @RequestMapping("bankAccounts")
 @Log
 public class BankAccountController {
-    private BankAccountService bankAccountService;
-    private UserService userService;
+    private final BankAccountService bankAccountService;
+    private final UserService userService;
 
     public BankAccountController(BankAccountService bankAccountService, UserService userService) {
         this.bankAccountService = bankAccountService;
@@ -56,30 +56,11 @@ public class BankAccountController {
         }
     }
 
-/*    @GetMapping
-    public ResponseEntity getBankAccountByUserName(@RequestParam String userName) {
-        try {
-            return ResponseEntity.status(200).body(bankAccountService.getBankAccountByUserName(userName));
-        } catch (Exception e) {
-           return this.handleException(e);
-        }
-    }
-
-    @GetMapping // get bank account by user id
-    public ResponseEntity getBankAccountByUserId(@RequestParam UUID userId) {
-        try {
-            return ResponseEntity.status(200).body(bankAccountService.getBankAccountByUserId(userId));
-        } catch (Exception e) {
-            return this.handleException(e);
-        }
-    }*/
-
     @PostMapping // create/add
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public Object addBankAccount(@RequestBody BankAccountDTO dto, @RequestBody UUID userID) throws Exception {
+    public ResponseEntity addBankAccount(@RequestBody BankAccountDTO dto) throws Exception {
         try {
-            UserDTO user = userService.getUserById(userID);
-            return bankAccountService.createBankAccount(dto, user);
+            return ResponseEntity.status(200).body(bankAccountService.createBankAccount(dto));
         } catch (Exception e) {
             return this.handleException(e);
         }
@@ -95,18 +76,39 @@ public class BankAccountController {
         }
     }
 
-    /* I didn't put delete method because we cannot delete a bank account,
-     we can only deactivate it which is also updating.
-     but for that we will ned an isActive property for a bankAccount */
-
     private ResponseEntity handleException(Exception e) {
         ExceptionDTO dto = new ExceptionDTO(e.getClass().getName(), e.getMessage());
         return ResponseEntity.status(400).body(dto);
     }
+
+    /* I didn't put delete method because we cannot delete a bank account,
+     we can only deactivate it which is also updating.
+     but for that we will ned an isActive property for a bankAccount */
 
     private SearchBankAccountDTO mapBankAccountToSearchBankAccountDTO(BankAccount bankAccount) {
         SearchBankAccountDTO searchBankAccountDTO = new SearchBankAccountDTO();
         searchBankAccountDTO.setIban(bankAccount.getIban());
         return searchBankAccountDTO;
     }
+
+
+
+    /*    @GetMapping
+        public ResponseEntity getBankAccountByUserName(@RequestParam String userName) {
+            try {
+                return ResponseEntity.status(200).body(bankAccountService.getBankAccountByUserName(userName));
+            } catch (Exception e) {
+               return this.handleException(e);
+            }
+        }
+
+        @GetMapping // get bank account by user id
+        public ResponseEntity getBankAccountByUserId(@RequestParam UUID userId) {
+            try {
+                return ResponseEntity.status(200).body(bankAccountService.getBankAccountByUserId(userId));
+            } catch (Exception e) {
+                return this.handleException(e);
+            }
+        }*/
+
 }

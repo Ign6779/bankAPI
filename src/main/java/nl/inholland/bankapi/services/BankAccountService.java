@@ -24,8 +24,13 @@ public class BankAccountService {
     @Autowired
     private BankAccountRepository bankAccountRepository;
 
-    public BankAccountService(BankAccountRepository bankAccountRepository) {
+
+    private UserService userService;
+
+    public BankAccountService(BankAccountRepository bankAccountRepository,UserService userService) {
         this.bankAccountRepository=bankAccountRepository;
+        this.userService = userService;
+
     }
 
     public List<BankAccount> getAllBankAccounts(Integer page, Integer size) {
@@ -74,11 +79,20 @@ public class BankAccountService {
         return bankAccountRepository.save(bankAccount);
     }
 
-    public BankAccount createBankAccount(BankAccountDTO dto, UserDTO user){
-        dto.setUser(user);
-        return addBankAccount(new BankAccount(
-            dto.getUser(), dto.getAbsoluteLimit(), dto.getBalance(), dto.getType())
-    );
+    public BankAccount createBankAccount(BankAccountDTO dto){
+        User user = mapUserToDTO(userService.getUserById(dto.getUserId()));
+        BankAccount bankAccount = mapDTOToBankAccount(dto);
+        bankAccount.setUser(user);
+        String iban;
+        do{
+            if(bankAccount.getType().equals(AccountType.BANK)){
+                iban="NL01INHO0000000001";
+            }else {
+                iban= generateIban();
+            }
+            bankAccount.setIban(iban);
+        }while (!bankAccountRepository.findById(iban).isEmpty());
+        return bankAccountRepository.save(bankAccount);
     }
 
     public BankAccount updateBankAccount(String iban, BankAccount bankAccount) {
@@ -113,5 +127,27 @@ public class BankAccountService {
         }
 
         return accountNumber.toString();
+    }
+
+    private User mapUserToDTO(UserDTO userDTO){
+        User user = new User();
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setEmail(userDTO.getEmail());
+        user.setBankAccounts(userDTO.getBankAccounts());
+        user.setPhone(userDTO.getPhone());
+        user.setId(userDTO.getId());
+        user.setRoles(userDTO.getRoles());
+        user.setDayLimit(user.getDayLimit());
+        user.setTransactionLimit(userDTO.getTransactionLimit());
+        return user;
+    }
+    private BankAccount mapDTOToBankAccount(BankAccountDTO dto) {
+        BankAccount bankAccount = new BankAccount();
+        bankAccount.setBalance(dto.getBalance());
+        bankAccount.setAvailable(true);
+        bankAccount.setType(dto.getType());
+        bankAccount.setAbsoluteLimit(dto.getAbsoluteLimit());
+        return bankAccount;
     }
 }

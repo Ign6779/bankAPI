@@ -6,11 +6,13 @@ import lombok.NoArgsConstructor;
 import nl.inholland.bankapi.models.AccountType;
 import nl.inholland.bankapi.models.User;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class BankAccountDTO {
-    private UserDTO user;
+    private UUID userId;
     private double absoluteLimit;
     private double balance;
     private AccountType type;
