@@ -7,8 +7,12 @@ import nl.inholland.bankapi.services.UserService;
 import nl.inholland.bankapi.models.dto.ExceptionDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.UUID;
 
 @RestController
@@ -73,11 +77,11 @@ public class UserController {
     }
 
     @PutMapping("/{id}") // edit/update
-
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
     public ResponseEntity updateUser(@PathVariable UUID id,@RequestBody User user) {
         try {
-            return ResponseEntity.status(200).body(userService.updateUser(id, user));
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            return ResponseEntity.status(200).body(userService.updateUser(id, user, authentication));
         } catch (Exception e) {
             return this.handleException(e);
         }
@@ -89,6 +93,19 @@ public class UserController {
         try {
             userService.deleteUser(id);
             return ResponseEntity.status(204).body(null);
+        } catch (Exception e) {
+            return this.handleException(e);
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
+    @GetMapping ("/test")
+    public ResponseEntity test() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+
+            return ResponseEntity.status(200).body(authentication.getName());
         } catch (Exception e) {
             return this.handleException(e);
         }

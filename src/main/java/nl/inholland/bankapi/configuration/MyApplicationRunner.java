@@ -37,7 +37,7 @@ public class MyApplicationRunner implements ApplicationRunner {
     @Transactional
     public void run(ApplicationArguments args) throws Exception {
         List.of(
-                new User("user1@email.com", "test", "Dude", "Bli", "+31000000000", 99.9, 99.9, List.of( Role.ROLE_EMPLOYEE)),
+                new User("user1@email.com", "test", "Dude", "Bli", "+31000000000", 99.9, 99.9, List.of(Role.ROLE_EMPLOYEE, Role.ROLE_CUSTOMER)),
                 new User("user2@email.com","test" , "Lebowski", "de blo","+31000000001", 99.9, 99.9, List.of(Role.ROLE_CUSTOMER)),
                 new User("user3@email.com","test" ,"Maude", "kliblo" , "+31000000002", 99.9, 99.9, List.of(Role.ROLE_CUSTOMER)),
                 new User("user4@email.com", "test","test","boss" ,"+31000000002", 99.9, 99.9, List.of(Role.ROLE_CUSTOMER))
