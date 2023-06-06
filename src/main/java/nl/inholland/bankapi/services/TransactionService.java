@@ -10,6 +10,7 @@ import nl.inholland.bankapi.repositories.TransactionRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -22,7 +23,7 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
     }
   
-    public List<TransactionDTO> getAllTransactions(Integer page, Integer size, BankAccount accountFrom, BankAccount accountTo) {
+    public List<TransactionDTO> getAllTransactions(Integer page, Integer size, BankAccount accountFrom, BankAccount accountTo, LocalDateTime dateFrom, LocalDateTime dateTo) {
         PageRequest pageable = PageRequest.of(page, size);
         if (accountFrom != null) {
             return transactionRepository.findByAccountFrom(accountFrom, pageable)
@@ -38,6 +39,15 @@ public class TransactionService {
                     .map(transaction -> mapDtoToTransaction(transaction))
                     .toList();
         }
+        if (dateTo != null && dateFrom != null) {
+            return transactionRepository.findAll(pageable)
+                    .getContent()
+                    .stream()
+                    .filter(transaction -> transaction.getTimeStamp().isAfter(dateFrom) && transaction.getTimeStamp().isBefore(dateTo))
+                    .map(transaction -> mapDtoToTransaction(transaction))
+                    .toList();
+        }
+
         return transactionRepository.findAll(pageable)
                 .getContent()
                 .stream()
