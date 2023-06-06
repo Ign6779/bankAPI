@@ -49,11 +49,11 @@ public class TransactionController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
     public ResponseEntity createTransaction(@RequestBody Transaction transaction) {
         try {
             if(isTransactionFieldsValid(transaction)){
-                transactionService.addTransaction(transaction);
-                return ResponseEntity.status(201).body(null);
+                return ResponseEntity.status(200).body(transactionService.addTransaction(transaction));
             }else
             {
                 return ResponseEntity.status(400).body("Invalid amount or field.");

@@ -53,13 +53,6 @@ public class BankAccountService {
         }
     }
 
-
-
-
-
-
-
-
     /*    public BankAccount getBankAccountByUserName(String userName) {
         return bankAccountRepository.findByUserName(userName).orElseThrow(EntityNotFoundException::new);
     }
@@ -100,6 +93,7 @@ public class BankAccountService {
                         .orElseThrow(() -> new EntityNotFoundException("Bank account with id " + iban + " not found"));
         updateBankAccountField(bankAccount.getAbsoluteLimit(), bankAccountToUpdate::setAbsoluteLimit);
         updateBankAccountField(bankAccount.isAvailable(), bankAccountToUpdate::setAvailable);
+        updateBankAccountField(bankAccount.getBalance(), bankAccountToUpdate::setBalance);
         return bankAccountRepository.save(bankAccountToUpdate );
     }
 

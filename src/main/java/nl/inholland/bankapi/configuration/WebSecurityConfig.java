@@ -44,7 +44,7 @@ public class WebSecurityConfig  {
         httpSecurity.authorizeHttpRequests()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/users/**").authenticated()
-                .requestMatchers("/transactions").authenticated()
+                .requestMatchers("/transactions/**").authenticated()
                 .requestMatchers("/bankAccounts/**").authenticated();
 
         httpSecurity.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
