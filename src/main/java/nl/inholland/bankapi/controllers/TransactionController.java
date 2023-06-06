@@ -35,9 +35,19 @@ public class TransactionController {
             @RequestParam(required = false, defaultValue = "100") Integer size,
             @RequestParam(required = false) String accountFrom,
             @RequestParam(required = false) String accountTo,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy/M/d") LocalDate dateFrom,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy/M/d") LocalDate dateTo) {
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-M-d") LocalDate dateFrom,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-M-d") LocalDate dateTo) {
         try {
+            LocalDateTime dateTimeFrom = null;
+            LocalDateTime dateTimeTo = null;
+
+            if (dateFrom != null) {
+                dateTimeFrom = dateFrom.atStartOfDay();
+            }
+
+            if (dateTo != null) {
+                dateTimeTo = dateTo.atStartOfDay().plusDays(1).minusNanos(1);
+            }
 
             BankAccount bankAccountFrom = null;
             BankAccount bankAccountTo = null;
@@ -50,11 +60,12 @@ public class TransactionController {
                 bankAccountTo = bankAccountService.getBankAccountById(accountTo);
             }
 
-            return ResponseEntity.ok(transactionService.getAllTransactions(page, size, bankAccountFrom, bankAccountTo, dateFrom.atStartOfDay(), dateTo.atStartOfDay().plusDays(1).minusNanos(1)));
+            return ResponseEntity.ok(transactionService.getAllTransactions(page, size, bankAccountFrom, bankAccountTo, dateTimeFrom, dateTimeTo));
         } catch (Exception e) {
             return this.handleException(e);
         }
     }
+
 
 
     @PostMapping
