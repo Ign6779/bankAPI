@@ -98,19 +98,6 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
-    @GetMapping ("/test")
-    public ResponseEntity test() {
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-
-            return ResponseEntity.status(200).body(authentication.getName());
-        } catch (Exception e) {
-            return this.handleException(e);
-        }
-    }
-
     private ResponseEntity handleException(Exception e) {
         ExceptionDTO dto = new ExceptionDTO(e.getClass().getName(), e.getMessage());
         return ResponseEntity.status(400).body(dto);

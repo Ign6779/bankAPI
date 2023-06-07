@@ -132,6 +132,6 @@ public class UserService {
     }
 
     public User register(RegisterDTO dto){
-        return addUser(new User(dto.email(), dto.password(), dto.firstName(), dto.lastName(), dto.phone(), 0.0, 0.0 , List.of(Role.ROLE_CUSTOMER)));
+        return addUser(new User(dto.email(), dto.password(), dto.firstName(), dto.lastName(), dto.phone(), 99.9, 99.9 , List.of(Role.ROLE_CUSTOMER)));
     }
 }
