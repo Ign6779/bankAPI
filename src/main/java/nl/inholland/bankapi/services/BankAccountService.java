@@ -83,16 +83,8 @@ public class BankAccountService {
         User user = mapUserToDTO(userService.getUserById(dto.getUserId()));
         BankAccount bankAccount = mapDTOToBankAccount(dto);
         bankAccount.setUser(user);
-        String iban;
-        do{
-            if(bankAccount.getType().equals(AccountType.BANK)){
-                iban="NL01INHO0000000001";
-            }else {
-                iban= generateIban();
-            }
-            bankAccount.setIban(iban);
-        }while (!bankAccountRepository.findById(iban).isEmpty());
-        return bankAccountRepository.save(bankAccount);
+        this.addBankAccount(bankAccount);
+        return bankAccount;
     }
 
     public BankAccount updateBankAccount(String iban, BankAccount bankAccount) {
