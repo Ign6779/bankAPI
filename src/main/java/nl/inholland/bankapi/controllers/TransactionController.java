@@ -36,7 +36,8 @@ public class TransactionController {
             @RequestParam(required = false) String accountFrom,
             @RequestParam(required = false) String accountTo,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-M-d") LocalDate dateFrom,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-M-d") LocalDate dateTo) {
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-M-d") LocalDate dateTo,
+            @RequestParam(required = false) Double amount,@RequestParam(required = false) Double highestAmount,@RequestParam(required = false) Double lowestAmount) {
         try {
             LocalDateTime dateTimeFrom = null;
             LocalDateTime dateTimeTo = null;
@@ -60,7 +61,7 @@ public class TransactionController {
                 bankAccountTo = bankAccountService.getBankAccountById(accountTo);
             }
 
-            return ResponseEntity.ok(transactionService.getAllTransactions(page, size, bankAccountFrom, bankAccountTo, dateTimeFrom, dateTimeTo));
+            return ResponseEntity.ok(transactionService.getAllTransactions(page, size, bankAccountFrom, bankAccountTo, dateTimeFrom, dateTimeTo, amount, highestAmount, lowestAmount));
         } catch (Exception e) {
             return this.handleException(e);
         }

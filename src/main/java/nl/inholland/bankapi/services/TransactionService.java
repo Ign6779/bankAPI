@@ -23,35 +23,24 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
     }
   
-    public List<TransactionDTO> getAllTransactions(Integer page, Integer size, BankAccount accountFrom, BankAccount accountTo, LocalDateTime dateFrom, LocalDateTime dateTo) {
+    public List<TransactionDTO> getAllTransactions(Integer page, Integer size, BankAccount accountFrom, BankAccount accountTo, LocalDateTime dateFrom, LocalDateTime dateTo, Double amount, Double highestAmount, Double lowestAmount) {
         PageRequest pageable = PageRequest.of(page, size);
+        List<TransactionDTO> transactions;
         if (accountFrom != null) {
-            return transactionRepository.findByAccountFrom(accountFrom, pageable)
-                    .getContent()
-                    .stream()
-                    .map(transaction -> mapDtoToTransaction(transaction))
-                    .toList();
+            transactions = transactionRepository.findByAccountFrom(accountFrom, pageable).getContent().stream().map(transaction -> mapDtoToTransaction(transaction)).toList();
+        } else if (accountTo != null) {
+            transactions = transactionRepository.findByAccountTo(accountTo, pageable).getContent().stream().map(transaction -> mapDtoToTransaction(transaction)).toList();
+        } else {
+            transactions = transactionRepository.findAll(pageable).getContent().stream().map(transaction -> mapDtoToTransaction(transaction)).toList();
         }
-        if (accountTo != null) {
-            return transactionRepository.findByAccountTo(accountTo, pageable)
-                    .getContent()
-                    .stream()
-                    .map(transaction -> mapDtoToTransaction(transaction))
-                    .toList();
-        }
-        if (dateTo != null && dateFrom != null) {
-            return transactionRepository.findAll(pageable)
-                    .getContent()
-                    .stream()
-                    .filter(transaction -> transaction.getTimeStamp().isAfter(dateFrom) && transaction.getTimeStamp().isBefore(dateTo))
-                    .map(transaction -> mapDtoToTransaction(transaction))
-                    .toList();
-        }
-
-        return transactionRepository.findAll(pageable)
-                .getContent()
-                .stream()
-                .map(transaction -> mapDtoToTransaction(transaction))
+        transactions = transactions.stream()
+                .filter(transaction -> (dateFrom == null || transaction.getTimeStamp().isAfter(dateFrom))
+                        && (dateTo == null || transaction.getTimeStamp().isBefore(dateTo))
+                        && (amount == null || transaction.getAmount()==(amount))
+                        && (highestAmount == null || transaction.getAmount() < highestAmount)
+                        && (lowestAmount == null || transaction.getAmount() > lowestAmount))
+                .toList();
+        return transactions.stream()
                 .toList();
     }
 
