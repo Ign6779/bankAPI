@@ -83,18 +83,21 @@ public class UserService {
         updateUserField(user.getEmail(), userToUpdate::setEmail);
         updateUserField(user.getRoles(), userToUpdate::setRoles);
         updateUserField(user.getPassword(), userToUpdate::setPassword);
-        if(authentication.getAuthorities().contains(Role.ROLE_EMPLOYEE)){
-            updateUserField(user.getDayLimit(), userToUpdate::setDayLimit);
-            updateUserField(user.getTransactionLimit(), userToUpdate::setTransactionLimit);
+        if(user.getDayLimit() !=null || user.getTransactionLimit() != null){
+            if(authentication.getAuthorities().contains(Role.ROLE_EMPLOYEE)){
+                updateUserField(user.getDayLimit(), userToUpdate::setDayLimit);
+                updateUserField(user.getTransactionLimit(), userToUpdate::setTransactionLimit);
+            }
+            else {
+                throw new IllegalStateException("Only employees are allowed to update transaction limit and day limit.");
+            }
         }
-        else {
-            throw new IllegalStateException("Only employees are allowed to update transaction limit and day limit.");
-        }
+
         return userRepository.save(userToUpdate);
     }
 
     private <T> void updateUserField(T value, Consumer<T> setter) {
-        if (value != null) {
+        if (value != null && !value.toString().isEmpty()) {
             setter.accept(value);
         }
     }
@@ -122,7 +125,7 @@ public class UserService {
     }
 
     public String login(String email, String password) throws Exception{
-        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new AuthenticationException("User with email: " + email + " not found") {});
+        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new AuthenticationException("Invalid email. Try again") {});
         if(bCryptPasswordEncoder.matches(password, user.getPassword())){
             return jwtTokenProvider.CreateToken(user.getEmail(), user.getRoles());
         }

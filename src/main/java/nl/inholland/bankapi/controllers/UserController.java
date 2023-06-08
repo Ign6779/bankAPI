@@ -112,4 +112,7 @@ public class UserController {
                 && user.getRoles() != null && user.getDayLimit() > 0
                 && user.getTransactionLimit() > 0;
     }
+
+
+
 }
