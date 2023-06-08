@@ -10,6 +10,7 @@ import nl.inholland.bankapi.repositories.TransactionRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -24,26 +25,24 @@ public class TransactionService {
         this.bankAccountService=bankAccountService;
     }
   
-    public List<TransactionDTO> getAllTransactions(Integer page, Integer size, BankAccount accountFrom, BankAccount accountTo) {
+    public List<TransactionDTO> getAllTransactions(Integer page, Integer size, BankAccount accountFrom, BankAccount accountTo, LocalDateTime dateFrom, LocalDateTime dateTo, Double amount, Double highestAmount, Double lowestAmount) {
         PageRequest pageable = PageRequest.of(page, size);
+        List<TransactionDTO> transactions;
         if (accountFrom != null) {
-            return transactionRepository.findByAccountFrom(accountFrom, pageable)
-                    .getContent()
-                    .stream()
-                    .map(transaction -> mapDtoToTransaction(transaction))
-                    .toList();
+            transactions = transactionRepository.findByAccountFrom(accountFrom, pageable).getContent().stream().map(transaction -> mapDtoToTransaction(transaction)).toList();
+        } else if (accountTo != null) {
+            transactions = transactionRepository.findByAccountTo(accountTo, pageable).getContent().stream().map(transaction -> mapDtoToTransaction(transaction)).toList();
+        } else {
+            transactions = transactionRepository.findAll(pageable).getContent().stream().map(transaction -> mapDtoToTransaction(transaction)).toList();
         }
-        if (accountTo != null) {
-            return transactionRepository.findByAccountTo(accountTo, pageable)
-                    .getContent()
-                    .stream()
-                    .map(transaction -> mapDtoToTransaction(transaction))
-                    .toList();
-        }
-        return transactionRepository.findAll(pageable)
-                .getContent()
-                .stream()
-                .map(transaction -> mapDtoToTransaction(transaction))
+        transactions = transactions.stream()
+                .filter(transaction -> (dateFrom == null || transaction.getTimeStamp().isAfter(dateFrom))
+                        && (dateTo == null || transaction.getTimeStamp().isBefore(dateTo))
+                        && (amount == null || transaction.getAmount()==(amount))
+                        && (highestAmount == null || transaction.getAmount() < highestAmount)
+                        && (lowestAmount == null || transaction.getAmount() > lowestAmount))
+                .toList();
+        return transactions.stream()
                 .toList();
     }
 
