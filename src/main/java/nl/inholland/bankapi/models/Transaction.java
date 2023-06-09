@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -18,16 +19,15 @@ public class Transaction {
     @GeneratedValue
     private UUID uuid;
 
-    private LocalDate timeStamp;
+    private LocalDateTime timeStamp;
     @ManyToOne
     private BankAccount accountFrom;
     @ManyToOne
     private BankAccount accountTo;
     private double amount;
-
     private String performingUser;
 
-    public Transaction(LocalDate timeStamp, BankAccount accountFrom, BankAccount accountTo, double amount, String performingUser) {
+    public Transaction(LocalDateTime timeStamp, BankAccount accountFrom, BankAccount accountTo, double amount, String performingUser) {
         this.timeStamp = timeStamp;
         this.accountFrom = accountFrom;
         this.accountTo = accountTo;

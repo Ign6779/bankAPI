@@ -3,9 +3,10 @@ package nl.inholland.bankapi.services;
 import jakarta.persistence.EntityNotFoundException;
 import nl.inholland.bankapi.models.AccountType;
 import nl.inholland.bankapi.models.BankAccount;
-import nl.inholland.bankapi.models.Role;
-import nl.inholland.bankapi.models.Transaction;
+import nl.inholland.bankapi.models.User;
+import nl.inholland.bankapi.models.dto.BankAccountDTO;
 import nl.inholland.bankapi.models.dto.SearchDTO;
+import nl.inholland.bankapi.models.dto.UserDTO;
 import nl.inholland.bankapi.repositories.BankAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -23,8 +24,13 @@ public class BankAccountService {
     @Autowired
     private BankAccountRepository bankAccountRepository;
 
-    public BankAccountService(BankAccountRepository bankAccountRepository) {
+
+    private UserService userService;
+
+    public BankAccountService(BankAccountRepository bankAccountRepository,UserService userService) {
         this.bankAccountRepository=bankAccountRepository;
+        this.userService = userService;
+
     }
 
     public List<BankAccount> getAllBankAccounts(Integer page, Integer size) {
@@ -47,20 +53,13 @@ public class BankAccountService {
         }
     }
 
-
-
-
-
-
-
-
     /*    public BankAccount getBankAccountByUserName(String userName) {
         return bankAccountRepository.findByUserName(userName).orElseThrow(EntityNotFoundException::new);
     }
     public BankAccount getBankAccountByUserId(long userId) {
         return bankAccountRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
     }*/
-    public void addBankAccount(BankAccount bankAccount) {
+    public BankAccount addBankAccount(BankAccount bankAccount) {
         String iban;
         do{
             if(bankAccount.getType().equals(AccountType.BANK)){
@@ -70,14 +69,25 @@ public class BankAccountService {
             }
             bankAccount.setIban(iban);
         }while (!bankAccountRepository.findById(iban).isEmpty());
-        bankAccountRepository.save(bankAccount);
+        return bankAccountRepository.save(bankAccount);
     }
 
-    public BankAccount updateBankAccount(String iban, BankAccount bankAccount) {
+    public BankAccount createBankAccount(BankAccountDTO dto){
+        User user = mapUserToDTO(userService.getUserById(dto.getUserId()));
+        BankAccount bankAccount = mapDTOToBankAccount(dto);
+        bankAccount.setUser(user);
+        this.addBankAccount(bankAccount);
+        return bankAccount;
+    }
+
+    public BankAccount updateBankAccount(String iban, BankAccount bankAccount, Boolean isTransaction) {
         BankAccount bankAccountToUpdate = bankAccountRepository.findById(iban)
                         .orElseThrow(() -> new EntityNotFoundException("Bank account with id " + iban + " not found"));
         updateBankAccountField(bankAccount.getAbsoluteLimit(), bankAccountToUpdate::setAbsoluteLimit);
         updateBankAccountField(bankAccount.isAvailable(), bankAccountToUpdate::setAvailable);
+        if(isTransaction){
+            updateBankAccountField(bankAccount.getBalance(), bankAccountToUpdate::setBalance);
+        }
         return bankAccountRepository.save(bankAccountToUpdate );
     }
 
@@ -105,5 +115,27 @@ public class BankAccountService {
         }
 
         return accountNumber.toString();
+    }
+
+    private User mapUserToDTO(UserDTO userDTO){
+        User user = new User();
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setEmail(userDTO.getEmail());
+        user.setBankAccounts(userDTO.getBankAccounts());
+        user.setPhone(userDTO.getPhone());
+        user.setId(userDTO.getId());
+        user.setRoles(userDTO.getRoles());
+        user.setDayLimit(user.getDayLimit());
+        user.setTransactionLimit(userDTO.getTransactionLimit());
+        return user;
+    }
+    public BankAccount mapDTOToBankAccount(BankAccountDTO dto) {
+        BankAccount bankAccount = new BankAccount();
+        bankAccount.setBalance(dto.getBalance());
+        bankAccount.setAvailable(true);
+        bankAccount.setType(dto.getType());
+        bankAccount.setAbsoluteLimit(dto.getAbsoluteLimit());
+        return bankAccount;
     }
 }

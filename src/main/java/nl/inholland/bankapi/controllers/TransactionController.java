@@ -1,11 +1,19 @@
 package nl.inholland.bankapi.controllers;
 
+import nl.inholland.bankapi.models.BankAccount;
+import nl.inholland.bankapi.models.Transaction;
 import nl.inholland.bankapi.models.dto.ExceptionDTO;
 import nl.inholland.bankapi.models.dto.TransactionDTO;
+import nl.inholland.bankapi.services.BankAccountService;
 import nl.inholland.bankapi.services.TransactionService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @RestController
@@ -13,38 +21,60 @@ import java.util.UUID;
 
 public class TransactionController {
     private TransactionService transactionService;
+    private BankAccountService bankAccountService;
 
-    public TransactionController(TransactionService transactionService){
+    public TransactionController(TransactionService transactionService, BankAccountService bankAccountService){
         this.transactionService = transactionService;
+        this.bankAccountService = bankAccountService;
     }
-
-    /*@GetMapping
-    public ResponseEntity getAllTransactions(){
-        try {
-            return ResponseEntity.ok(transactionService.getAllTransactions());
-        }
-        catch (Exception e){
-            return  this.handleException(e);
-        }
-    }*/
 
     @GetMapping
-    public ResponseEntity getAllTransactions(@RequestParam(required = false,defaultValue = "0") Integer page,
-                                             @RequestParam(required = false,defaultValue = "100") Integer size){
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
+    public ResponseEntity getAllTransactions(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "100") Integer size,
+            @RequestParam(required = false) String accountFrom,
+            @RequestParam(required = false) String accountTo,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-M-d") LocalDate dateFrom,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-M-d") LocalDate dateTo,
+            @RequestParam(required = false) Double amount,@RequestParam(required = false) Double highestAmount,@RequestParam(required = false) Double lowestAmount) {
         try {
-            return ResponseEntity.ok(transactionService.getAllTransactions(page, size));
-        }
-        catch (Exception e){
-            return  this.handleException(e);
+            LocalDateTime dateTimeFrom = null;
+            LocalDateTime dateTimeTo = null;
+
+            if (dateFrom != null) {
+                dateTimeFrom = dateFrom.atStartOfDay();
+            }
+
+            if (dateTo != null) {
+                dateTimeTo = dateTo.atStartOfDay().plusDays(1).minusNanos(1);
+            }
+
+            BankAccount bankAccountFrom = null;
+            BankAccount bankAccountTo = null;
+
+            if (accountFrom != null) {
+                bankAccountFrom = bankAccountService.getBankAccountById(accountFrom);
+            }
+
+            if (accountTo != null) {
+                bankAccountTo = bankAccountService.getBankAccountById(accountTo);
+            }
+
+            return ResponseEntity.ok(transactionService.getAllTransactions(page, size, bankAccountFrom, bankAccountTo, dateTimeFrom, dateTimeTo, amount, highestAmount, lowestAmount));
+        } catch (Exception e) {
+            return this.handleException(e);
         }
     }
 
+
+
     @PostMapping
-    public ResponseEntity createTransaction(@RequestBody TransactionDTO transaction) {
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
+    public ResponseEntity createTransaction(@RequestBody Transaction transaction) {
         try {
             if(isTransactionFieldsValid(transaction)){
-                transactionService.addTransaction(transaction);
-                return ResponseEntity.status(201).body(null);
+                return ResponseEntity.status(200).body(transactionService.addTransaction(transaction));
             }else
             {
                 return ResponseEntity.status(400).body("Invalid amount or field.");
@@ -56,11 +86,13 @@ public class TransactionController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
     public ResponseEntity getTransactionById(@PathVariable UUID id){
         return ResponseEntity.ok(transactionService.getTransactionById(id));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
     public ResponseEntity updateTransaction(@PathVariable UUID id,@RequestBody TransactionDTO transactionDTO) {
         try {
             transactionService.updateTransaction(id,transactionDTO);
@@ -75,8 +107,8 @@ public class TransactionController {
         return ResponseEntity.status(400).body(dto);
     }
 
-    private boolean isTransactionFieldsValid(TransactionDTO transaction) {
-        return transaction.getAmount() > 0 && transaction.getAccountTo() != null
+    private boolean isTransactionFieldsValid(Transaction transaction) {
+        return (Double)transaction.getAmount()!=null && transaction.getAmount() > 0 && transaction.getAccountTo() != null
                 && transaction.getAccountFrom() != null;
     }
 }

@@ -8,13 +8,16 @@ import nl.inholland.bankapi.models.dto.RegisterDTO;
 import nl.inholland.bankapi.models.dto.UserDTO;
 import nl.inholland.bankapi.repositories.UserRepository;
 import nl.inholland.bankapi.util.JwtTokenProvider;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -68,23 +71,37 @@ public class UserService {
 
     }
 
-    public User updateUser(UUID id, User user) {
+    public User updateUser(UUID id, User user,  Authentication authentication) {
         User userToUpdate = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User with id: " + id + " not found"));
-        updateUserField(user.getFirstName(), userToUpdate::setFirstName);
-        updateUserField(user.getLastName(), userToUpdate::setLastName);
-        updateUserField(user.getPhone(), userToUpdate::setPhone);
-        updateUserField(user.getEmail(), userToUpdate::setEmail);
-        updateUserField(user.getDayLimit(), userToUpdate::setDayLimit);
-        updateUserField(user.getTransactionLimit(), userToUpdate::setTransactionLimit);
-        updateUserField(user.getRoles(), userToUpdate::setRoles);
-        updateUserField(user.getPassword(), userToUpdate::setPassword);
+        if(authentication.getAuthorities().contains(Role.ROLE_CUSTOMER) && !authentication.getAuthorities().contains(Role.ROLE_EMPLOYEE) && !authentication.getName().equals(userToUpdate.getEmail())){
+            throw new IllegalStateException("You can not update other user.");
+        }
+        updateUserField(user.getFirstName(), userToUpdate::setFirstName, String.class);
+        updateUserField(user.getLastName(), userToUpdate::setLastName, String.class);
+        updateUserField(user.getPhone(), userToUpdate::setPhone, String.class);
+        updateUserField(user.getEmail(), userToUpdate::setEmail, String.class);
+        updateUserField(user.getRoles(), userToUpdate::setRoles, List.class);
+        updateUserField(user.getPassword(), userToUpdate::setPassword, String.class);
+        if(user.getDayLimit() !=null || user.getTransactionLimit() != null){
+            if(!authentication.getAuthorities().contains(Role.ROLE_EMPLOYEE)){
+                throw new IllegalStateException("Only employees are allowed to update transaction limit and day limit.");
+            }
+            if(user.getDayLimit() <0 || user.getTransactionLimit() < 0){
+                throw new IllegalArgumentException("Value cannot be negative.");
+            }
+            updateUserField(user.getDayLimit(), userToUpdate::setDayLimit, double.class);
+            updateUserField(user.getTransactionLimit(), userToUpdate::setTransactionLimit, double.class);
+        }
 
         return userRepository.save(userToUpdate);
     }
 
-    private <T> void updateUserField(T value, Consumer<T> setter) {
-        if (value != null) {
+    private <T> void updateUserField(T value, Consumer<T> setter, Class<T> expectedType) {
+        if (value != null && !value.toString().isEmpty()) {
+            if (!value.getClass().equals(expectedType)) {
+                throw new IllegalArgumentException("Value should be of type " + expectedType.getSimpleName());
+            }
             setter.accept(value);
         }
     }
@@ -112,7 +129,7 @@ public class UserService {
     }
 
     public String login(String email, String password) throws Exception{
-        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new AuthenticationException("User with email: " + email + " not found") {});
+        User user = userRepository.findUserByEmail(email).orElseThrow(() -> new AuthenticationException("Invalid email. Try again") {});
         if(bCryptPasswordEncoder.matches(password, user.getPassword())){
             return jwtTokenProvider.CreateToken(user.getEmail(), user.getRoles());
         }
@@ -122,6 +139,6 @@ public class UserService {
     }
 
     public User register(RegisterDTO dto){
-        return addUser(new User(dto.email(), dto.password(), dto.firstName(), dto.lastName(), dto.phone(), 0.0, 0.0 , List.of(Role.ROLE_CUSTOMER)));
+        return addUser(new User(dto.email(), dto.password(), dto.firstName(), dto.lastName(), dto.phone(), 99.9, 99.9 , List.of(Role.ROLE_CUSTOMER)));
     }
 }

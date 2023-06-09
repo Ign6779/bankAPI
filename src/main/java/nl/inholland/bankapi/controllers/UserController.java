@@ -7,8 +7,12 @@ import nl.inholland.bankapi.services.UserService;
 import nl.inholland.bankapi.models.dto.ExceptionDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.UUID;
 
 @RestController
@@ -73,11 +77,11 @@ public class UserController {
     }
 
     @PutMapping("/{id}") // edit/update
-
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
     public ResponseEntity updateUser(@PathVariable UUID id,@RequestBody User user) {
         try {
-            return ResponseEntity.status(200).body(userService.updateUser(id, user));
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            return ResponseEntity.status(200).body(userService.updateUser(id, user, authentication));
         } catch (Exception e) {
             return this.handleException(e);
         }
@@ -108,4 +112,7 @@ public class UserController {
                 && user.getRoles() != null && user.getDayLimit() > 0
                 && user.getTransactionLimit() > 0;
     }
+
+
+
 }
