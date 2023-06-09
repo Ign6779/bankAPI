@@ -7,6 +7,7 @@ import nl.inholland.bankapi.models.User;
 import nl.inholland.bankapi.models.dto.BankAccountDTO;
 import nl.inholland.bankapi.models.dto.SearchDTO;
 import nl.inholland.bankapi.services.BankAccountService;
+import nl.inholland.bankapi.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -20,18 +21,18 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 public class BankAccountControllerTest {
     private MockMvc mockMvc;
     @Mock
     private BankAccountService bankAccountService;
+    @Mock
+    private UserService userService;
 
     @BeforeEach
     void setUp(){
@@ -82,6 +83,65 @@ public class BankAccountControllerTest {
         verify(bankAccountService, times(1)).getBankAccountById(iban);
         verifyNoMoreInteractions(bankAccountService);
     }
+
+    @Test
+    void testGetIbanByUserFullName() throws Exception{
+        SearchDTO searchDTO = new SearchDTO("AA", "BB");
+        User user = new User("johndoe@email.com", "test", "AA", "BB", "+31000000000", 99.9, 99.9, List.of(Role.ROLE_CUSTOMER));
+        List<BankAccount> accountList = new ArrayList<>();
+
+        BankAccount bankAccount1 = new BankAccount(user, 100, 80.9, AccountType.CURRENT);
+        accountList.add(bankAccount1);
+
+        when(bankAccountService.getBankAccountByUserFullName(searchDTO)).thenReturn(accountList);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/bankAccounts/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"firstName\":\"AA\",\"lastName\":\"BB\"}")) // Corrected syntax: Added closing double quote after BB
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].iban").value(bankAccount1.getIban())); // Adjusted JSON path to access the first object in the array
+
+        verify(bankAccountService, times(1)).getBankAccountByUserFullName(searchDTO);
+        verifyNoMoreInteractions(bankAccountService);
+    }
+
+    @Test
+    void testAddBankAccount() throws Exception {
+        UUID userId = UUID.randomUUID();
+        User user = new User("johndoe@email.com", "test", "AA", "BB", "+31000000000", 99.9, 99.9, List.of(Role.ROLE_CUSTOMER));
+        user.setId(userId);
+        BankAccount bankAccount1 = new BankAccount(user, 1, 1, AccountType.CURRENT);
+
+        when(bankAccountService.addBankAccount(bankAccount1)).thenReturn(bankAccount1);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/bankAccounts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"userId\": \"" + user.getId() + "\", \"absoluteLimit\": \"1\", \"balance\": \"1\", \"type\": \"CURRENT\"}"))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.absoluteLimit").value(bankAccount1.getAbsoluteLimit()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.balance").value(bankAccount1.getBalance()));
+
+    }
+
+    @Test
+    void testUpdateBankAccount() throws Exception{
+        String iban = generateIban();
+        User user = new User("johndoe@email.com", "test", "AA", "BB", "+31000000000", 99.9, 99.9, List.of(Role.ROLE_CUSTOMER));
+        BankAccount bankAccount = new BankAccount(user, 1, 1, AccountType.CURRENT);
+
+        when(bankAccountService.updateBankAccount(iban, bankAccount, false)).thenReturn(bankAccount);
+        mockMvc.perform(MockMvcRequestBuilders.put("/bankAccounts/{iban}", iban)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"absoluteLimit\": \"1\", \"available\": \"true\"}"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.absoluteLimit").value(bankAccount.getAbsoluteLimit()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.available").value(bankAccount.isAvailable()));
+
+        verify(bankAccountService, times(1)).updateBankAccount(iban, bankAccount, false);
+        verifyNoMoreInteractions(bankAccountService);
+    }
+
+
 
 
 
