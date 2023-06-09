@@ -3,6 +3,7 @@ package nl.inholland.bankapi.controllers;
 import lombok.Data;
 import lombok.extern.java.Log;
 import nl.inholland.bankapi.models.BankAccount;
+import nl.inholland.bankapi.models.User;
 import nl.inholland.bankapi.models.dto.*;
 import nl.inholland.bankapi.services.BankAccountService;
 import nl.inholland.bankapi.services.UserService;
@@ -60,6 +61,9 @@ public class BankAccountController {
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity addBankAccount(@RequestBody BankAccountDTO dto) throws Exception {
         try {
+            if(!isBankAccountFieldsValid(dto)){
+                throw new Exception("Required fields are missing.");
+            }
             return ResponseEntity.status(200).body(bankAccountService.createBankAccount(dto));
         } catch (Exception e) {
             return this.handleException(e);
@@ -70,7 +74,7 @@ public class BankAccountController {
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity updateBankAccount(@PathVariable String iban, @RequestBody BankAccount bankAccount) {
         try {
-            return ResponseEntity.status(200).body(bankAccountService.updateBankAccount(iban, bankAccount));
+            return ResponseEntity.status(200).body(bankAccountService.updateBankAccount(iban, bankAccount, false));
         } catch (Exception e) {
             return this.handleException(e);
         }
@@ -110,5 +114,13 @@ public class BankAccountController {
                 return this.handleException(e);
             }
         }*/
+
+    private boolean isBankAccountFieldsValid(BankAccountDTO bankAccount) {
+        return bankAccount.getType() !=null && !bankAccount.getType().toString().isEmpty() &&
+                (Double) bankAccount.getBalance()!=null &&
+                (Double)bankAccount.getAbsoluteLimit() !=null  &&
+                !bankAccount.getUserId().toString().isEmpty() && bankAccount.getUserId()!=null;
+    }
+
 
 }
