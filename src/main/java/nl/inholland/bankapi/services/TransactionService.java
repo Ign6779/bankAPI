@@ -81,8 +81,8 @@ public class TransactionService {
         }
         transaction.getAccountFrom().setBalance(transaction.getAccountFrom().getBalance() - transaction.getAmount());
         transaction.getAccountTo().setBalance(transaction.getAccountTo().getBalance() + transaction.getAmount());
-        bankAccountService.updateBankAccount(transaction.getAccountFrom().getIban(), transaction.getAccountFrom());
-        bankAccountService.updateBankAccount(transaction.getAccountTo().getIban(), transaction.getAccountTo());
+        bankAccountService.updateBankAccount(transaction.getAccountFrom().getIban(), transaction.getAccountFrom(), true);
+        bankAccountService.updateBankAccount(transaction.getAccountTo().getIban(), transaction.getAccountTo(), true);
 
         return transactionRepository.save(transaction);
     }
