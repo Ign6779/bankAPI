@@ -80,12 +80,14 @@ public class BankAccountService {
         return bankAccount;
     }
 
-    public BankAccount updateBankAccount(String iban, BankAccount bankAccount) {
+    public BankAccount updateBankAccount(String iban, BankAccount bankAccount, Boolean isTransaction) {
         BankAccount bankAccountToUpdate = bankAccountRepository.findById(iban)
                         .orElseThrow(() -> new EntityNotFoundException("Bank account with id " + iban + " not found"));
         updateBankAccountField(bankAccount.getAbsoluteLimit(), bankAccountToUpdate::setAbsoluteLimit);
         updateBankAccountField(bankAccount.isAvailable(), bankAccountToUpdate::setAvailable);
-        updateBankAccountField(bankAccount.getBalance(), bankAccountToUpdate::setBalance);
+        if(isTransaction){
+            updateBankAccountField(bankAccount.getBalance(), bankAccountToUpdate::setBalance);
+        }
         return bankAccountRepository.save(bankAccountToUpdate );
     }
 
