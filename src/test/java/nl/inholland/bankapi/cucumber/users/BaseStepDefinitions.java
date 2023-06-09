@@ -24,27 +24,6 @@ import org.springframework.web.client.RestTemplate;
 @CucumberContextConfiguration
 public class BaseStepDefinitions {
 
-    @Bean
-    public RestTemplate restTemplate()
-            throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
-        TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
 
-        SSLContext sslContext = SSLContextBuilder.create()
-                .loadTrustMaterial(acceptingTrustStrategy)
-                .build();
-
-        SSLConnectionSocketFactory socketFactory = SSLConnectionSocketFactoryBuilder.create()
-                .setSslContext(sslContext)
-                .build();
-
-        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-
-
-        HttpComponentsClientHttpRequestFactory requestFactory =
-                new HttpComponentsClientHttpRequestFactory(httpClient);
-
-        RestTemplate restTemplate = new RestTemplate(requestFactory);
-        return restTemplate;
-    }
 
 }
