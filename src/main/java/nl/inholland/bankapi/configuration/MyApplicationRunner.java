@@ -41,7 +41,8 @@ public class MyApplicationRunner implements ApplicationRunner {
                 new User("user2@email.com","test" , "Lebowski", "de blo","+31000000001", 99.9, 99.9, List.of(Role.ROLE_CUSTOMER)),
 
                 new User("user3@email.com","test" ,"Maude", "kliblo" , "+31000000002", 99.9, 99.9, List.of(Role.ROLE_CUSTOMER)),
-                new User("user4@email.com", "test","test","boss" ,"+31000000002", 99.9, 99.9, List.of(Role.ROLE_CUSTOMER))
+                new User("user4@email.com", "test","test","boss" ,"+31000000002", 99.9, 99.9, List.of(Role.ROLE_CUSTOMER)),
+                new User("user99@email.com","test" ,"Deez", "Nuts" , "+31000000009", 99.9, 99.9, List.of(Role.ROLE_CUSTOMER))
 
         ).forEach(user -> userService.addUser(user));
 
@@ -57,7 +58,7 @@ public class MyApplicationRunner implements ApplicationRunner {
 //                new BankAccount(userService.getUserByFirstNameAndLastName("Maude", "kliblo"), 80.9, 1000.0, BankAccount.AccountType.SAVINGS)
 //        ));
         List.of(
-                new BankAccount(null, 100, 100, AccountType.BANK),
+                new BankAccount(null, 100, 1000000000, AccountType.BANK),
                 new BankAccount(userService.getUserByFirstNameAndLastName("Dude" , "Bli"), 100, 80.9, AccountType.CURRENT),
                 new BankAccount(userService.getUserByFirstNameAndLastName("Dude", "Bli"), 80.9, 1100.0, AccountType.SAVINGS),
                 new BankAccount(userService.getUserByFirstNameAndLastName("Lebowski", "de blo"), 80.9, 1000.0, AccountType.CURRENT),

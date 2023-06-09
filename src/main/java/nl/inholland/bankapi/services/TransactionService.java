@@ -58,30 +58,32 @@ public class TransactionService {
             }
         }
         double totalAmount = amountPerDay + transaction.getAmount();
-        if(transaction.getAccountFrom().getBalance() < transaction.getAmount()){
-            throw new IllegalArgumentException("Insufficient funds");
-        } else if (transaction.getAccountFrom().getBalance() < 0) {
-            throw new IllegalArgumentException("Balance cannot be negative");
-        } else if (transaction.getAccountFrom().equals(transaction.getAccountTo())) {
-            throw new IllegalArgumentException("Cannot transfer to the same account");
-        } else if (transaction.getAccountFrom().getAbsoluteLimit() > transaction.getAccountFrom().getBalance() - transaction.getAmount()) {
-            throw new IllegalArgumentException("Account balance falls below absolute limit");
-        } else if (transaction.getAccountFrom().getUser().getTransactionLimit()<transaction.getAmount()) {
-            throw new IllegalArgumentException("Amount exceeds transaction limit");
-        } else if (transaction.getAccountFrom().getUser().getDayLimit()<totalAmount){
-            throw new IllegalArgumentException("Amount exceeds day limit");
-        } else if (transaction.getAccountFrom().getType()== AccountType.SAVINGS && transaction.getAccountTo().getType()== AccountType.CURRENT
-        && !transaction.getAccountFrom().getUser().getId().equals(transaction.getAccountTo().getUser().getId())) {
-            throw new IllegalArgumentException("Cannot transfer from savings to current account of another user");
-        } else if (transaction.getAccountFrom().getType()== AccountType.CURRENT && transaction.getAccountTo().getType()== AccountType.SAVINGS
-            && !transaction.getAccountFrom().getUser().getId().equals(transaction.getAccountTo().getUser().getId())) {
-            throw new IllegalArgumentException("Cannot transfer from current to savings account of another user");
-        } else {
-            transaction.getAccountFrom().setBalance(transaction.getAccountFrom().getBalance() - transaction.getAmount());
-            transaction.getAccountTo().setBalance(transaction.getAccountTo().getBalance() + transaction.getAmount());
-            bankAccountService.updateBankAccount(transaction.getAccountFrom().getIban(), transaction.getAccountFrom());
-            bankAccountService.updateBankAccount(transaction.getAccountTo().getIban(), transaction.getAccountTo());
+        if(!transaction.getAccountFrom().getType().equals(AccountType.BANK)) {
+            if (transaction.getAccountFrom().getBalance() < transaction.getAmount()) {
+                throw new IllegalArgumentException("Insufficient funds");
+            } else if (transaction.getAccountFrom().getBalance() < 0) {
+                throw new IllegalArgumentException("Balance cannot be negative");
+            } else if (transaction.getAccountFrom().equals(transaction.getAccountTo())) {
+                throw new IllegalArgumentException("Cannot transfer to the same account");
+            } else if (transaction.getAccountFrom().getAbsoluteLimit() > transaction.getAccountFrom().getBalance() - transaction.getAmount()) {
+                throw new IllegalArgumentException("Account balance falls below absolute limit");
+            } else if (transaction.getAccountFrom().getUser().getTransactionLimit() < transaction.getAmount()) {
+                throw new IllegalArgumentException("Amount exceeds transaction limit");
+            } else if (transaction.getAccountFrom().getUser().getDayLimit()<totalAmount){
+                throw new IllegalArgumentException("Amount exceeds day limit");
+            } else if (transaction.getAccountFrom().getType() == AccountType.SAVINGS && transaction.getAccountTo().getType() == AccountType.CURRENT
+                    && !transaction.getAccountFrom().getUser().getId().equals(transaction.getAccountTo().getUser().getId())) {
+                throw new IllegalArgumentException("Cannot transfer from savings to current account of another user");
+            } else if (transaction.getAccountFrom().getType() == AccountType.CURRENT && transaction.getAccountTo().getType() == AccountType.SAVINGS
+                    && !transaction.getAccountFrom().getUser().getId().equals(transaction.getAccountTo().getUser().getId())) {
+                throw new IllegalArgumentException("Cannot transfer from current to savings account of another user");
+            }
         }
+        transaction.getAccountFrom().setBalance(transaction.getAccountFrom().getBalance() - transaction.getAmount());
+        transaction.getAccountTo().setBalance(transaction.getAccountTo().getBalance() + transaction.getAmount());
+        bankAccountService.updateBankAccount(transaction.getAccountFrom().getIban(), transaction.getAccountFrom());
+        bankAccountService.updateBankAccount(transaction.getAccountTo().getIban(), transaction.getAccountTo());
+
         return transactionRepository.save(transaction);
     }
 
