@@ -18,11 +18,9 @@ import java.util.UUID;
 @Log
 public class BankAccountController {
     private final BankAccountService bankAccountService;
-    private final UserService userService;
 
-    public BankAccountController(BankAccountService bankAccountService, UserService userService) {
+    public BankAccountController(BankAccountService bankAccountService) {
         this.bankAccountService = bankAccountService;
-        this.userService = userService;
     }
 
     // we will need Get Methods -Beth

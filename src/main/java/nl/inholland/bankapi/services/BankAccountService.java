@@ -130,7 +130,7 @@ public class BankAccountService {
         user.setTransactionLimit(userDTO.getTransactionLimit());
         return user;
     }
-    private BankAccount mapDTOToBankAccount(BankAccountDTO dto) {
+    public BankAccount mapDTOToBankAccount(BankAccountDTO dto) {
         BankAccount bankAccount = new BankAccount();
         bankAccount.setBalance(dto.getBalance());
         bankAccount.setAvailable(true);
