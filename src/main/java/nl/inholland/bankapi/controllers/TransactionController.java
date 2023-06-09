@@ -86,11 +86,13 @@ public class TransactionController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
     public ResponseEntity getTransactionById(@PathVariable UUID id){
         return ResponseEntity.ok(transactionService.getTransactionById(id));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
     public ResponseEntity updateTransaction(@PathVariable UUID id,@RequestBody TransactionDTO transactionDTO) {
         try {
             transactionService.updateTransaction(id,transactionDTO);
@@ -106,7 +108,7 @@ public class TransactionController {
     }
 
     private boolean isTransactionFieldsValid(Transaction transaction) {
-        return transaction.getAmount() > 0 && transaction.getAccountTo() != null
+        return (Double)transaction.getAmount()!=null && transaction.getAmount() > 0 && transaction.getAccountTo() != null
                 && transaction.getAccountFrom() != null;
     }
 }
