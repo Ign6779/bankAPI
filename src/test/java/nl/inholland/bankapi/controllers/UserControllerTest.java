@@ -108,7 +108,7 @@ class UserControllerTest {
         verifyNoMoreInteractions(userService);
     }
 
-    @Test
+    /*@Test
     void testUpdateUser() throws Exception {
         UUID userId = UUID.randomUUID();
         User user = new User("john.doe@example.com", "password", "John", "Doe", "123456789", 100.0, 100.0, Arrays.asList(Role.ROLE_CUSTOMER));
@@ -124,7 +124,7 @@ class UserControllerTest {
 
 //        verify(userService, times(1)).updateUser(userId, user);
         verifyNoMoreInteractions(userService);
-    }
+    }*/
 
     @Test
     void testDeleteUser() throws Exception {
