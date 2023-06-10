@@ -39,12 +39,14 @@ class UserControllerTest {
 
     @Test
     void testGetAllUsers() throws Exception {
-        List<UserDTO> users = Arrays.asList(
-                new UserDTO(UUID.randomUUID(), "John", "Doe", "john.doe@example.com", Arrays.asList(Role.ROLE_CUSTOMER), "123456789", 100.0, 100.0, null),
-                new UserDTO(UUID.randomUUID(), "Jane", "Doe", "jane.doe@example.com", Arrays.asList(Role.ROLE_EMPLOYEE), "123456789", 100.0, 100.0, null)
+        List<User> users = Arrays.asList(
+                new User("john.doe@example.com", "test","John", "Doe", "123456789", 100.0, 100.0, Arrays.asList(Role.ROLE_CUSTOMER)),
+                new User("jane.doe@example.com", "test" ,"Jane", "Doe", "123456789", 100.0, 100.0, Arrays.asList(Role.ROLE_EMPLOYEE))
         );
+        users.get(0).setId(UUID.randomUUID());
+        users.get(1).setId(UUID.randomUUID());
 
-        when(userService.getAllUsers(null, null, true)).thenReturn(users);
+        when(userService.getAllUsers(0, 10, false)).thenReturn(users);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/users")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -53,15 +55,15 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].email").value(users.get(0).getEmail()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].email").value(users.get(1).getEmail()));
 
-        verify(userService, times(1)).getAllUsers(null, null, true);
+        verify(userService, times(1)).getAllUsers(0, 10, false);
         verifyNoMoreInteractions(userService);
     }
 
     @Test
     void testGetUserById() throws Exception {
         UUID userId = UUID.randomUUID();
-        UserDTO user = new UserDTO(userId, "John", "Doe", "john.doe@example.com", Arrays.asList(Role.ROLE_CUSTOMER), "123456789", 100.0, 100.0, null);
-
+        User user = new User( "john.doe@example.com", "Doe", "John", "Doe ","123456789" ,100.0, 100.0,Arrays.asList(Role.ROLE_CUSTOMER));
+        user.setId(userId);
         when(userService.getUserById(userId)).thenReturn(user);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/users/{id}", userId)
@@ -76,9 +78,10 @@ class UserControllerTest {
 
     @Test
     void testGetUserByEmail() throws Exception {
+        UUID userId = UUID.randomUUID();
         String email = "john.doe@example.com";
-        UserDTO user = new UserDTO(UUID.randomUUID(), "John", "Doe", email, Arrays.asList(Role.ROLE_CUSTOMER), "123456789", 100.0, 100.0, null);
-
+        User user = new User( email, "Doe", "John", "Doe ","123456789" ,100.0, 100.0,Arrays.asList(Role.ROLE_CUSTOMER));
+        user.setId(userId);
         when(userService.getUserByEmail(email)).thenReturn(user);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/users/email/{email}", email)

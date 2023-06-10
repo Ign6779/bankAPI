@@ -43,22 +43,26 @@ public class UserService {
         return userRepository.findUserByFirstNameAndLastName(firstName, lastName).orElseThrow(() -> new EntityNotFoundException("User with: " + firstName+ " "+ lastName + " not found"));
     }
 
-    public List<UserDTO> getAllUsers(Integer page, Integer size, Boolean hasAccount){
+    public List<User> getAllUsers(Integer page, Integer size, Boolean hasAccount){
         PageRequest pageable= PageRequest.of(page, size);
         if (hasAccount !=null && hasAccount==false){
-            return userRepository.findAllByBankAccountsIsNull(pageable).getContent().stream().map(user -> mapDtoToUser(user)).toList();
+            return userRepository.findAllByBankAccountsIsNull(pageable).getContent().stream().toList();
         }
-        return userRepository.findAll(pageable).getContent().stream().map(user -> mapDtoToUser(user)).toList();
+        return userRepository.findAll(pageable).getContent().stream().toList();
     }
 
-    public UserDTO getUserById(UUID id){
-        User user=userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id: " + id + " not found"));
-        UserDTO dto = mapDtoToUser(user);
-        return dto;
+//    public UserDTO getUserById(UUID id){
+//        User user=userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id: " + id + " not found"));
+//        UserDTO dto = mapDtoToUser(user);
+//        return dto;
+//    }
+
+    public User getUserById(UUID id){
+        return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id: " + id + " not found"));
     }
 
-    public UserDTO getUserByEmail(String email){
-        return mapDtoToUser(userRepository.findUserByEmail(email).orElseThrow(() -> new EntityNotFoundException("User with id: " + email + " not found")));
+    public User getUserByEmail(String email){
+        return userRepository.findUserByEmail(email).orElseThrow(() -> new EntityNotFoundException("User with id: " + email + " not found"));
     }
    
 

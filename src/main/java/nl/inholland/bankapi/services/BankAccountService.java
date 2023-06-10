@@ -73,7 +73,7 @@ public class BankAccountService {
     }
 
     public BankAccount createBankAccount(BankAccountDTO dto){
-        User user = mapUserToDTO(userService.getUserById(dto.getUserId()));
+        User user = userService.getUserById(dto.getUserId());
         BankAccount bankAccount = mapDTOToBankAccount(dto);
         bankAccount.setUser(user);
         this.addBankAccount(bankAccount);
