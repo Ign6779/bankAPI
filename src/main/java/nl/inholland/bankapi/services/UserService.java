@@ -90,16 +90,19 @@ public class UserService {
             if(user.getDayLimit() <0 || user.getTransactionLimit() < 0){
                 throw new IllegalArgumentException("Value cannot be negative.");
             }
-            updateUserField(user.getDayLimit(), userToUpdate::setDayLimit, double.class);
-            updateUserField(user.getTransactionLimit(), userToUpdate::setTransactionLimit, double.class);
+            updateUserField(user.getDayLimit(), userToUpdate::setDayLimit, Double.class);
+            updateUserField(user.getTransactionLimit(), userToUpdate::setTransactionLimit, Double.class);
         }
 
         return userRepository.save(userToUpdate);
     }
 
-    private <T> void updateUserField(T value, Consumer<T> setter, Class<T> expectedType) {
-        if (value != null && !value.toString().isEmpty()) {
-            if (!value.getClass().equals(expectedType)) {
+    private <T> void updateUserField(T value, Consumer<T> setter, Class expectedType) {
+        if (value != null) {
+            if (value.toString().isEmpty()) {
+                throw new IllegalArgumentException("Please fill in the required fields and don't leave them empty");
+            }
+            if (!expectedType.isInstance(value)) {
                 throw new IllegalArgumentException("Value should be of type " + expectedType.getSimpleName());
             }
             setter.accept(value);
