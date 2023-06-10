@@ -47,8 +47,8 @@ public class UserStepDefinitions  extends BaseStepDefinitions{
                         null,
                         httpHeaders),
                 String.class);
-        List<String> options = Arrays.stream(Objects.requireNonNull(response.getHeaders()
-                        .get("Allow"))
+        List<String> options = Arrays.stream(response.getHeaders()
+                .get("Allow")
                 .get(0)
                 .split(",")).toList();
 

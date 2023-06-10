@@ -103,7 +103,6 @@
 			<version>5.1.4</version> <!-- Replace with the appropriate version -->
 		</dependency>
 
-
 	</dependencies>
 
 	<build>
