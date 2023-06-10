@@ -81,8 +81,7 @@ public class UserController {
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
     public ResponseEntity updateUser(@PathVariable UUID id,@RequestBody User user) {
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            return ResponseEntity.status(200).body(userService.updateUser(id, user, authentication));
+            return ResponseEntity.status(200).body(userService.updateUser(id, user));
         } catch (Exception e) {
             return this.handleException(e);
         }

@@ -11,6 +11,7 @@ import nl.inholland.bankapi.util.JwtTokenProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -58,7 +59,12 @@ public class UserService {
 //    }
 
     public User getUserById(UUID id){
-        return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id: " + id + " not found"));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user= userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id: " + id + " not found"));
+        if(authentication.getAuthorities().contains(Role.ROLE_CUSTOMER) && !authentication.getAuthorities().contains(Role.ROLE_EMPLOYEE) && !authentication.getName().equals(user.getEmail())){
+            throw new IllegalStateException("You can not retrieve other users beside yourself.");
+        }
+        return  user;
     }
 
     public User getUserByEmail(String email){
@@ -75,7 +81,8 @@ public class UserService {
 
     }
 
-    public User updateUser(UUID id, User user,  Authentication authentication) {
+    public User updateUser(UUID id, User user) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userToUpdate = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User with id: " + id + " not found"));
         if(authentication.getAuthorities().contains(Role.ROLE_CUSTOMER) && !authentication.getAuthorities().contains(Role.ROLE_EMPLOYEE) && !authentication.getName().equals(userToUpdate.getEmail())){
@@ -97,7 +104,6 @@ public class UserService {
             updateUserField(user.getDayLimit(), userToUpdate::setDayLimit, Double.class);
             updateUserField(user.getTransactionLimit(), userToUpdate::setTransactionLimit, Double.class);
         }
-
         return userRepository.save(userToUpdate);
     }
 

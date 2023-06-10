@@ -116,7 +116,7 @@ class UserControllerTest {
         UUID userId = UUID.randomUUID();
         User user = new User("john.doe@example.com", "password", "John", "Doe", "123456789", 100.0, 100.0, Arrays.asList(Role.ROLE_CUSTOMER));
 
-//        when(userService.updateUser(userId, user)).thenReturn(user);
+        when(userService.updateUser(userId, user)).thenReturn(user);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/users/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -125,7 +125,7 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(user.getEmail()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.firstName").value(user.getFirstName()));
 
-//        verify(userService, times(1)).updateUser(userId, user);
+        verify(userService, times(1)).updateUser(userId, user);
         verifyNoMoreInteractions(userService);
     }
 
