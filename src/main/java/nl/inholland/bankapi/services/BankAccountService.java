@@ -83,16 +83,22 @@ public class BankAccountService {
     public BankAccount updateBankAccount(String iban, BankAccount bankAccount, Boolean isTransaction) {
         BankAccount bankAccountToUpdate = bankAccountRepository.findById(iban)
                         .orElseThrow(() -> new EntityNotFoundException("Bank account with id " + iban + " not found"));
-        updateBankAccountField(bankAccount.getAbsoluteLimit(), bankAccountToUpdate::setAbsoluteLimit);
-        updateBankAccountField(bankAccount.isAvailable(), bankAccountToUpdate::setAvailable);
+        updateBankAccountField(bankAccount.getAbsoluteLimit(), bankAccountToUpdate::setAbsoluteLimit, Double.class);
+        updateBankAccountField(bankAccount.isAvailable(), bankAccountToUpdate::setAvailable, Boolean.class);
         if(isTransaction){
-            updateBankAccountField(bankAccount.getBalance(), bankAccountToUpdate::setBalance);
+            updateBankAccountField(bankAccount.getBalance(), bankAccountToUpdate::setBalance, Double.class);
         }
         return bankAccountRepository.save(bankAccountToUpdate );
     }
 
-    private <T> void updateBankAccountField(T value, Consumer<T> setter) {
+    private <T> void updateBankAccountField(T value, Consumer<T> setter, Class expectedType) {
         if (value != null) {
+            if (value.toString().isEmpty()) {
+                throw new IllegalArgumentException("Please fill in the required fields and don't leave them empty");
+            }
+            if (!expectedType.isInstance(value)) {
+                throw new IllegalArgumentException("Value should be of type " + expectedType.getSimpleName());
+            }
             setter.accept(value);
         }
     }

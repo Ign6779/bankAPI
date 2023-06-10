@@ -110,9 +110,12 @@ public class UserController {
                 && user.getEmail() != null && !user.getEmail().isEmpty()
                 && user.getPhone() != null && !user.getPhone().isEmpty()
                 && user.getRoles() != null && user.getDayLimit() > 0
-                && user.getTransactionLimit() > 0;
+                && user.getDayLimit().equals(Double.class)
+                && user.getTransactionLimit() > 0 && user.getDayLimit().equals(Double.class);
     }
 
-
+    private boolean test(User user){
+        return user.getDayLimit() instanceof Double;
+    }
 
 }
