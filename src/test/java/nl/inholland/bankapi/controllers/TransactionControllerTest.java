@@ -24,6 +24,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 public class TransactionControllerTest {
     private MockMvc mockMvc;
@@ -63,6 +64,7 @@ public class TransactionControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/transactions")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}")) // Replace with the JSON representation of your valid transaction
+                .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         verify(transactionService).addTransaction(any(Transaction.class));
