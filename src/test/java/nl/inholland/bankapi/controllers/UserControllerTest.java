@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import static org.mockito.Mockito.when;
+
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,9 +20,17 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.*;
 
@@ -43,10 +53,8 @@ class UserControllerTest {
                 new User("john.doe@example.com", "test","John", "Doe", "123456789", 100.0, 100.0, Arrays.asList(Role.ROLE_CUSTOMER)),
                 new User("jane.doe@example.com", "test" ,"Jane", "Doe", "123456789", 100.0, 100.0, Arrays.asList(Role.ROLE_EMPLOYEE))
         );
-        users.get(0).setId(UUID.randomUUID());
-        users.get(1).setId(UUID.randomUUID());
 
-        when(userService.getAllUsers(0, 10, false)).thenReturn(users);
+        when(userService.getAllUsers(0, 100, false)).thenReturn(users);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/users")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -55,9 +63,10 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].email").value(users.get(0).getEmail()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].email").value(users.get(1).getEmail()));
 
-        verify(userService, times(1)).getAllUsers(0, 10, false);
+        verify(userService, times(1)).getAllUsers(0, 100, false);
         verifyNoMoreInteractions(userService);
     }
+
 
     @Test
     void testGetUserById() throws Exception {
@@ -97,9 +106,7 @@ class UserControllerTest {
     @Test
     void testCreateUser() throws Exception {
         User user = new User("john.doe@example.com", "password", "John", "Doe", "123456789", 100.0, 100.0, Arrays.asList(Role.ROLE_CUSTOMER));
-
         when(userService.addUser(user)).thenReturn(user);
-
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"john.doe@example.com\",\"password\":\"password\",\"firstName\":\"John\",\"lastName\":\"Doe\",\"phone\":\"123456789\",\"dayLimit\":100.0,\"transactionLimit\":100.0,\"roles\":[\"ROLE_CUSTOMER\"]}"))
@@ -138,5 +145,19 @@ class UserControllerTest {
 
         verify(userService, times(1)).deleteUser(userId);
         verifyNoMoreInteractions(userService);
+    }
+
+    private UserDTO mapDtoToUser(User user) {
+        UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setRoles(user.getRoles());
+        dto.setPhone(user.getPhone());
+        dto.setEmail(user.getEmail());
+        dto.setDayLimit(user.getDayLimit());
+        dto.setTransactionLimit(user.getTransactionLimit());
+        dto.setBankAccounts(user.getBankAccounts());
+        return dto;
     }
 }

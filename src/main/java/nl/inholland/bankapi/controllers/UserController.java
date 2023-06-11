@@ -104,14 +104,12 @@ public class UserController {
     }
 
     private boolean isUserFieldsValid(User user) {
-        // Perform field validation here
-        // For example, check if the required fields are not null or empty
         return user.getFirstName() != null && !user.getFirstName().isEmpty()
                 && user.getEmail() != null && !user.getEmail().isEmpty()
                 && user.getPhone() != null && !user.getPhone().isEmpty()
-                && user.getRoles() != null && user.getDayLimit() > 0
-                && user.getDayLimit().equals(Double.class)
-                && user.getTransactionLimit() > 0 && user.getDayLimit().equals(Double.class);
+                && user.getRoles() != null && !user.getRoles().isEmpty()
+                && user.getDayLimit() != null && user.getDayLimit() > 0
+                && user.getTransactionLimit() != null && user.getTransactionLimit() > 0;
     }
 
     private UserDTO mapDtoToUser(User user) {
@@ -128,9 +126,5 @@ public class UserController {
         return dto;
     }
 
-//
-//    private boolean test(User user){
-//        return user.getDayLimit() instanceof Double;
-//    }
 
 }
