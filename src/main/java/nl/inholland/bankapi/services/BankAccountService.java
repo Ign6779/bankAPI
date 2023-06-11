@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -27,10 +26,23 @@ public class BankAccountService {
 
     private UserService userService;
 
-    public BankAccountService(BankAccountRepository bankAccountRepository,UserService userService) {
-        this.bankAccountRepository=bankAccountRepository;
+    public BankAccountService(BankAccountRepository bankAccountRepository, UserService userService) {
+        this.bankAccountRepository = bankAccountRepository;
         this.userService = userService;
 
+    }
+
+    private static String generateRandomAccountNumber() {
+        Random random = new Random();
+        StringBuilder accountNumber = new StringBuilder();
+
+        // Generate 9 random digits
+        for (int i = 0; i < 9; i++) {
+            int digit = random.nextInt(10);
+            accountNumber.append(digit);
+        }
+
+        return accountNumber.toString();
     }
 
     public List<BankAccount> getAllBankAccounts(Integer page, Integer size) {
@@ -61,18 +73,18 @@ public class BankAccountService {
     }*/
     public BankAccount addBankAccount(BankAccount bankAccount) {
         String iban;
-        do{
-            if(bankAccount.getType().equals(AccountType.BANK)){
-                iban="NL01INHO0000000001";
-            }else {
-                iban= generateIban();
+        do {
+            if (bankAccount.getType().equals(AccountType.BANK)) {
+                iban = "NL01INHO0000000001";
+            } else {
+                iban = generateIban();
             }
             bankAccount.setIban(iban);
-        }while (!bankAccountRepository.findById(iban).isEmpty());
+        } while (!bankAccountRepository.findById(iban).isEmpty());
         return bankAccountRepository.save(bankAccount);
     }
 
-    public BankAccount createBankAccount(BankAccountDTO dto){
+    public BankAccount createBankAccount(BankAccountDTO dto) {
         User user = userService.getUserById(dto.getUserId());
         BankAccount bankAccount = mapDTOToBankAccount(dto);
         bankAccount.setUser(user);
@@ -82,13 +94,13 @@ public class BankAccountService {
 
     public BankAccount updateBankAccount(String iban, BankAccount bankAccount, Boolean isTransaction) {
         BankAccount bankAccountToUpdate = bankAccountRepository.findById(iban)
-                        .orElseThrow(() -> new EntityNotFoundException("Bank account with id " + iban + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Bank account with id " + iban + " not found"));
         updateBankAccountField(bankAccount.getAbsoluteLimit(), bankAccountToUpdate::setAbsoluteLimit, Double.class);
         updateBankAccountField(bankAccount.isAvailable(), bankAccountToUpdate::setAvailable, Boolean.class);
-        if(isTransaction){
+        if (isTransaction) {
             updateBankAccountField(bankAccount.getBalance(), bankAccountToUpdate::setBalance, Double.class);
         }
-        return bankAccountRepository.save(bankAccountToUpdate );
+        return bankAccountRepository.save(bankAccountToUpdate);
     }
 
     private <T> void updateBankAccountField(T value, Consumer<T> setter, Class expectedType) {
@@ -103,27 +115,14 @@ public class BankAccountService {
         }
     }
 
-    private String generateIban(){
+    private String generateIban() {
         String countryCode = "NL";
         String bankCode = "INHO0";
-        String accountNumber= generateRandomAccountNumber();
-        return countryCode+bankCode+accountNumber;
+        String accountNumber = generateRandomAccountNumber();
+        return countryCode + bankCode + accountNumber;
     }
 
-    private static String generateRandomAccountNumber() {
-        Random random = new Random();
-        StringBuilder accountNumber = new StringBuilder();
-
-        // Generate 9 random digits
-        for (int i = 0; i < 9; i++) {
-            int digit = random.nextInt(10);
-            accountNumber.append(digit);
-        }
-
-        return accountNumber.toString();
-    }
-
-    private User mapUserToDTO(UserDTO userDTO){
+    private User mapUserToDTO(UserDTO userDTO) {
         User user = new User();
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
@@ -136,6 +135,7 @@ public class BankAccountService {
         user.setTransactionLimit(userDTO.getTransactionLimit());
         return user;
     }
+
     public BankAccount mapDTOToBankAccount(BankAccountDTO dto) {
         BankAccount bankAccount = new BankAccount();
         bankAccount.setBalance(dto.getBalance());

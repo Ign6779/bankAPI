@@ -1,17 +1,15 @@
 package nl.inholland.bankapi.controllers;
 
-import lombok.Data;
 import lombok.extern.java.Log;
 import nl.inholland.bankapi.models.BankAccount;
-import nl.inholland.bankapi.models.User;
-import nl.inholland.bankapi.models.dto.*;
+import nl.inholland.bankapi.models.dto.BankAccountDTO;
+import nl.inholland.bankapi.models.dto.ExceptionDTO;
+import nl.inholland.bankapi.models.dto.SearchBankAccountDTO;
+import nl.inholland.bankapi.models.dto.SearchDTO;
 import nl.inholland.bankapi.services.BankAccountService;
-import nl.inholland.bankapi.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("bankAccounts")
@@ -59,7 +57,7 @@ public class BankAccountController {
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity addBankAccount(@RequestBody BankAccountDTO dto) throws Exception {
         try {
-            if(!isBankAccountFieldsValid(dto)){
+            if (!isBankAccountFieldsValid(dto)) {
                 throw new Exception("Required fields are missing.");
             }
             return ResponseEntity.status(201).body(bankAccountService.createBankAccount(dto));
@@ -114,10 +112,10 @@ public class BankAccountController {
         }*/
 
     private boolean isBankAccountFieldsValid(BankAccountDTO bankAccount) {
-        return bankAccount.getType() !=null && !bankAccount.getType().toString().isEmpty() &&
-                (Double) bankAccount.getBalance()!=null &&
-                (Double)bankAccount.getAbsoluteLimit() !=null  &&
-                !bankAccount.getUserId().toString().isEmpty() && bankAccount.getUserId()!=null;
+        return bankAccount.getType() != null && !bankAccount.getType().toString().isEmpty() &&
+                (Double) bankAccount.getBalance() != null &&
+                (Double) bankAccount.getAbsoluteLimit() != null &&
+                !bankAccount.getUserId().toString().isEmpty() && bankAccount.getUserId() != null;
     }
 
 

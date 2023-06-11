@@ -11,22 +11,17 @@ import nl.inholland.bankapi.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class BankAccountControllerTest {
@@ -36,17 +31,30 @@ public class BankAccountControllerTest {
     @Mock
     private UserService userService;
 
+    private static String generateRandomAccountNumber() {
+        Random random = new Random();
+        StringBuilder accountNumber = new StringBuilder();
+
+        // Generate 9 random digits
+        for (int i = 0; i < 9; i++) {
+            int digit = random.nextInt(10);
+            accountNumber.append(digit);
+        }
+
+        return accountNumber.toString();
+    }
+
     @BeforeEach
-    void setUp(){
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(new BankAccountController(bankAccountService)).build();
     }
 
     @Test
-    void testGetAllBankAccounts() throws Exception{
+    void testGetAllBankAccounts() throws Exception {
         List<BankAccountDTO> bankAccountDTOSs = Arrays.asList(
-            new BankAccountDTO(UUID.randomUUID(), 100, 80.9, AccountType.CURRENT),
-            new BankAccountDTO(UUID.randomUUID(), 50, 40.45, AccountType.CURRENT)
+                new BankAccountDTO(UUID.randomUUID(), 100, 80.9, AccountType.CURRENT),
+                new BankAccountDTO(UUID.randomUUID(), 50, 40.45, AccountType.CURRENT)
         );
 
         // Convert BankAccountDTO list to BankAccount list because GetAllBankAccounts return BankAccount instead of BankAccountDTO
@@ -68,7 +76,7 @@ public class BankAccountControllerTest {
     }
 
     @Test
-    void testGetBankAccount() throws Exception{
+    void testGetBankAccount() throws Exception {
         String iban = generateIban();
         BankAccountDTO bankAccountDTO = new BankAccountDTO(UUID.randomUUID(), 1989, 22.0, AccountType.CURRENT);
         BankAccount bankAccount = mapDTOToBankAccount(bankAccountDTO);
@@ -87,7 +95,7 @@ public class BankAccountControllerTest {
     }
 
     @Test
-    void testGetIbanByUserFullName() throws Exception{
+    void testGetIbanByUserFullName() throws Exception {
         SearchDTO searchDTO = new SearchDTO("AA", "BB");
         User user = new User("johndoe@email.com", "test", "AA", "BB", "+31000000000", 99.9, 99.9, List.of(Role.ROLE_CUSTOMER));
         List<BankAccount> accountList = new ArrayList<>();
@@ -125,7 +133,7 @@ public class BankAccountControllerTest {
     }
 
     @Test
-    void testUpdateBankAccount() throws Exception{
+    void testUpdateBankAccount() throws Exception {
         String iban = generateIban();
         User user = new User("johndoe@email.com", "test", "AA", "BB", "+31000000000", 99.9, 99.9, List.of(Role.ROLE_CUSTOMER));
         BankAccount bankAccount = new BankAccount(user, 1, 1, AccountType.CURRENT);
@@ -137,29 +145,6 @@ public class BankAccountControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private BankAccount mapDTOToBankAccount(BankAccountDTO dto) {
         BankAccount bankAccount = new BankAccount();
         bankAccount.setBalance(dto.getBalance());
@@ -168,24 +153,12 @@ public class BankAccountControllerTest {
         bankAccount.setAbsoluteLimit(dto.getAbsoluteLimit());
         return bankAccount;
     }
-    public String generateIban(){
+
+    public String generateIban() {
         String countryCode = "NL";
         String bankCode = "INHO0";
-        String accountNumber= generateRandomAccountNumber();
-        return countryCode+bankCode+accountNumber;
-    }
-
-    private static String generateRandomAccountNumber() {
-        Random random = new Random();
-        StringBuilder accountNumber = new StringBuilder();
-
-        // Generate 9 random digits
-        for (int i = 0; i < 9; i++) {
-            int digit = random.nextInt(10);
-            accountNumber.append(digit);
-        }
-
-        return accountNumber.toString();
+        String accountNumber = generateRandomAccountNumber();
+        return countryCode + bankCode + accountNumber;
     }
 
 }

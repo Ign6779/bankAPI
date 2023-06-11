@@ -1,10 +1,11 @@
 package nl.inholland.bankapi.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nl.inholland.bankapi.models.dto.UserDTO;
 
 @Entity
 @Data
@@ -17,7 +18,10 @@ public class BankAccount {
     @ManyToOne
     @JsonBackReference
     private User user;
-
+    private double absoluteLimit;
+    private double balance;
+    private AccountType type;
+    private boolean available;
     public BankAccount(User user, double absoluteLimit, double balance, AccountType type) {
         this.user = user;
         this.absoluteLimit = absoluteLimit;
@@ -25,11 +29,6 @@ public class BankAccount {
         this.type = type;
         this.available = true;
     }
-
-    private double absoluteLimit;
-    private double balance;
-    private AccountType type;
-    private boolean available;
 
 
 }

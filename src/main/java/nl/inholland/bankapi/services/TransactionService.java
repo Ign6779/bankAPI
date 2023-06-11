@@ -5,7 +5,6 @@ import nl.inholland.bankapi.models.AccountType;
 import nl.inholland.bankapi.models.BankAccount;
 import nl.inholland.bankapi.models.Transaction;
 import nl.inholland.bankapi.models.dto.TransactionDTO;
-import nl.inholland.bankapi.models.dto.UserDTO;
 import nl.inholland.bankapi.repositories.TransactionRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -13,18 +12,17 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class TransactionService {
     private TransactionRepository transactionRepository;
     private BankAccountService bankAccountService;
 
-    public TransactionService(TransactionRepository transactionRepository, BankAccountService bankAccountService){
+    public TransactionService(TransactionRepository transactionRepository, BankAccountService bankAccountService) {
         this.transactionRepository = transactionRepository;
-        this.bankAccountService=bankAccountService;
+        this.bankAccountService = bankAccountService;
     }
-  
+
     public List<TransactionDTO> getAllTransactions(Integer page, Integer size, BankAccount accountFrom, BankAccount accountTo, LocalDateTime dateFrom, LocalDateTime dateTo, Double amount, Double highestAmount, Double lowestAmount) {
         PageRequest pageable = PageRequest.of(page, size);
         List<TransactionDTO> transactions;
@@ -38,7 +36,7 @@ public class TransactionService {
         transactions = transactions.stream()
                 .filter(transaction -> (dateFrom == null || transaction.getTimeStamp().isAfter(dateFrom))
                         && (dateTo == null || transaction.getTimeStamp().isBefore(dateTo))
-                        && (amount == null || transaction.getAmount()==(amount))
+                        && (amount == null || transaction.getAmount() == (amount))
                         && (highestAmount == null || transaction.getAmount() < highestAmount)
                         && (lowestAmount == null || transaction.getAmount() > lowestAmount))
                 .toList();
@@ -53,12 +51,12 @@ public class TransactionService {
         transaction.setTimeStamp(java.time.LocalDateTime.now());
         double amountPerDay = 0;
         for (Transaction transaction1 : transactionsOfSender) {
-            if(transaction1.getAccountFrom().getIban().equals(transaction.getAccountFrom().getIban()) && transaction1.getTimeStamp().getDayOfMonth() == transaction.getTimeStamp().getDayOfMonth()){
-                    amountPerDay += transaction1.getAmount();
+            if (transaction1.getAccountFrom().getIban().equals(transaction.getAccountFrom().getIban()) && transaction1.getTimeStamp().getDayOfMonth() == transaction.getTimeStamp().getDayOfMonth()) {
+                amountPerDay += transaction1.getAmount();
             }
         }
         double totalAmount = amountPerDay + transaction.getAmount();
-        if(!transaction.getAccountFrom().getType().equals(AccountType.BANK)) {
+        if (!transaction.getAccountFrom().getType().equals(AccountType.BANK)) {
             if (transaction.getAccountFrom().getBalance() < transaction.getAmount()) {
                 throw new IllegalArgumentException("Insufficient funds");
             } else if (transaction.getAccountFrom().getBalance() < 0) {
@@ -69,7 +67,7 @@ public class TransactionService {
                 throw new IllegalArgumentException("Account balance falls below absolute limit");
             } else if (transaction.getAccountFrom().getUser().getTransactionLimit() < transaction.getAmount()) {
                 throw new IllegalArgumentException("Amount exceeds transaction limit");
-            } else if (transaction.getAccountFrom().getUser().getDayLimit()<totalAmount){
+            } else if (transaction.getAccountFrom().getUser().getDayLimit() < totalAmount) {
                 throw new IllegalArgumentException("Amount exceeds day limit");
             } else if (transaction.getAccountFrom().getType() == AccountType.SAVINGS && transaction.getAccountTo().getType() == AccountType.CURRENT
                     && !transaction.getAccountFrom().getUser().getId().equals(transaction.getAccountTo().getUser().getId())) {
@@ -105,7 +103,7 @@ public class TransactionService {
         return transactionRepository.save(transactionToUpdate);
     }
 
-    private TransactionDTO mapDtoToTransaction(Transaction transaction){
+    private TransactionDTO mapDtoToTransaction(Transaction transaction) {
         TransactionDTO dto = new TransactionDTO();
         dto.setAccountFrom(transaction.getAccountFrom());
         dto.setAccountTo(transaction.getAccountTo());

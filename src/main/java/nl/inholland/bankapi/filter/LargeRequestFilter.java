@@ -3,6 +3,7 @@ package nl.inholland.bankapi.filter;
 import jakarta.servlet.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 
 @Component

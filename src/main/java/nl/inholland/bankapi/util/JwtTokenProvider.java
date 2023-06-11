@@ -1,6 +1,9 @@
 package nl.inholland.bankapi.util;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import nl.inholland.bankapi.models.Role;
 import nl.inholland.bankapi.services.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,18 +11,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import io.jsonwebtoken.*;
 
-import java.util.List;
 import java.util.Date;
-import java.security.PrivateKey;
+import java.util.List;
 
 @Component
 public class JwtTokenProvider {
-    @Value("${application.token.validity}")
-    private long validityInMicroseconds;
     private final MyUserDetailsService myUserDetailsService;
     private final JwtKeyProvider jwtKeyProvider;
+    @Value("${application.token.validity}")
+    private long validityInMicroseconds;
 
     public JwtTokenProvider(MyUserDetailsService myUserDetailsService, JwtKeyProvider jwtKeyProvider) {
         this.myUserDetailsService = myUserDetailsService;
