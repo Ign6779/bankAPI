@@ -11,6 +11,7 @@ import nl.inholland.bankapi.util.JwtTokenProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -43,22 +44,31 @@ public class UserService {
         return userRepository.findUserByFirstNameAndLastName(firstName, lastName).orElseThrow(() -> new EntityNotFoundException("User with: " + firstName+ " "+ lastName + " not found"));
     }
 
-    public List<UserDTO> getAllUsers(Integer page, Integer size, Boolean hasAccount){
+    public List<User> getAllUsers(Integer page, Integer size, Boolean hasAccount){
         PageRequest pageable= PageRequest.of(page, size);
         if (hasAccount !=null && hasAccount==false){
-            return userRepository.findAllByBankAccountsIsNull(pageable).getContent().stream().map(user -> mapDtoToUser(user)).toList();
+            return userRepository.findAllByBankAccountsIsNull(pageable).getContent().stream().toList();
         }
-        return userRepository.findAll(pageable).getContent().stream().map(user -> mapDtoToUser(user)).toList();
+        return userRepository.findAll(pageable).getContent().stream().toList();
     }
 
-    public UserDTO getUserById(UUID id){
-        User user=userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id: " + id + " not found"));
-        UserDTO dto = mapDtoToUser(user);
-        return dto;
+//    public UserDTO getUserById(UUID id){
+//        User user=userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id: " + id + " not found"));
+//        UserDTO dto = mapDtoToUser(user);
+//        return dto;
+//    }
+
+    public User getUserById(UUID id){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user= userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id: " + id + " not found"));
+        if(authentication.getAuthorities().contains(Role.ROLE_CUSTOMER) && !authentication.getAuthorities().contains(Role.ROLE_EMPLOYEE) && !authentication.getName().equals(user.getEmail())){
+            throw new IllegalStateException("You can not retrieve other users beside yourself.");
+        }
+        return  user;
     }
 
-    public UserDTO getUserByEmail(String email){
-        return mapDtoToUser(userRepository.findUserByEmail(email).orElseThrow(() -> new EntityNotFoundException("User with id: " + email + " not found")));
+    public User getUserByEmail(String email){
+        return userRepository.findUserByEmail(email).orElseThrow(() -> new EntityNotFoundException("User with id: " + email + " not found"));
     }
    
 
@@ -71,7 +81,8 @@ public class UserService {
 
     }
 
-    public User updateUser(UUID id, User user,  Authentication authentication) {
+    public User updateUser(UUID id, User user) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userToUpdate = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User with id: " + id + " not found"));
         if(authentication.getAuthorities().contains(Role.ROLE_CUSTOMER) && !authentication.getAuthorities().contains(Role.ROLE_EMPLOYEE) && !authentication.getName().equals(userToUpdate.getEmail())){
@@ -90,16 +101,18 @@ public class UserService {
             if(user.getDayLimit() <0 || user.getTransactionLimit() < 0){
                 throw new IllegalArgumentException("Value cannot be negative.");
             }
-            updateUserField(user.getDayLimit(), userToUpdate::setDayLimit, double.class);
-            updateUserField(user.getTransactionLimit(), userToUpdate::setTransactionLimit, double.class);
+            updateUserField(user.getDayLimit(), userToUpdate::setDayLimit, Double.class);
+            updateUserField(user.getTransactionLimit(), userToUpdate::setTransactionLimit, Double.class);
         }
-
         return userRepository.save(userToUpdate);
     }
 
-    private <T> void updateUserField(T value, Consumer<T> setter, Class<T> expectedType) {
-        if (value != null && !value.toString().isEmpty()) {
-            if (!value.getClass().equals(expectedType)) {
+    private <T> void updateUserField(T value, Consumer<T> setter, Class expectedType) {
+        if (value != null) {
+            if (value.toString().isEmpty()) {
+                throw new IllegalArgumentException("Please fill in the required fields and don't leave them empty");
+            }
+            if (!expectedType.isInstance(value)) {
                 throw new IllegalArgumentException("Value should be of type " + expectedType.getSimpleName());
             }
             setter.accept(value);

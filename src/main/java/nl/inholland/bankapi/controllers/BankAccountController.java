@@ -62,7 +62,7 @@ public class BankAccountController {
             if(!isBankAccountFieldsValid(dto)){
                 throw new Exception("Required fields are missing.");
             }
-            return ResponseEntity.status(200).body(bankAccountService.createBankAccount(dto));
+            return ResponseEntity.status(201).body(bankAccountService.createBankAccount(dto));
         } catch (Exception e) {
             return this.handleException(e);
         }
