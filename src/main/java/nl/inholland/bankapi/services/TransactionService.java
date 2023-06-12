@@ -9,6 +9,7 @@ import nl.inholland.bankapi.repositories.TransactionRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -113,5 +114,8 @@ public class TransactionService {
         return dto;
     }
 
-
+    public Double getsSumOfAmountsByAccountAndDate(BankAccount bankAccount) {
+        LocalDate currentTime = LocalDate.now();
+        return transactionRepository.getSumOfAmountsByAccountAndDate(bankAccount.getIban(), currentTime.atStartOfDay());
+    }
 }
