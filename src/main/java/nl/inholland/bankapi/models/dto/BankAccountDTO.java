@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import nl.inholland.bankapi.models.AccountType;
-import nl.inholland.bankapi.models.User;
 
 import java.util.UUID;
 

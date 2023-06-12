@@ -1,6 +1,5 @@
 package nl.inholland.bankapi.controllers;
 
-import nl.inholland.bankapi.controllers.UserController;
 import nl.inholland.bankapi.models.Role;
 import nl.inholland.bankapi.models.User;
 import nl.inholland.bankapi.models.dto.UserDTO;
@@ -8,29 +7,16 @@ import nl.inholland.bankapi.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-
-import static org.mockito.Mockito.when;
-
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.*;
 
@@ -50,8 +36,8 @@ class UserControllerTest {
     @Test
     void testGetAllUsers() throws Exception {
         List<User> users = Arrays.asList(
-                new User("john.doe@example.com", "test","John", "Doe", "123456789", 100.0, 100.0, Arrays.asList(Role.ROLE_CUSTOMER)),
-                new User("jane.doe@example.com", "test" ,"Jane", "Doe", "123456789", 100.0, 100.0, Arrays.asList(Role.ROLE_EMPLOYEE))
+                new User("john.doe@example.com", "test", "John", "Doe", "123456789", 100.0, 100.0, Arrays.asList(Role.ROLE_CUSTOMER)),
+                new User("jane.doe@example.com", "test", "Jane", "Doe", "123456789", 100.0, 100.0, Arrays.asList(Role.ROLE_EMPLOYEE))
         );
 
         when(userService.getAllUsers(0, 100, false)).thenReturn(users);
@@ -71,7 +57,7 @@ class UserControllerTest {
     @Test
     void testGetUserById() throws Exception {
         UUID userId = UUID.randomUUID();
-        User user = new User( "john.doe@example.com", "Doe", "John", "Doe ","123456789" ,100.0, 100.0,Arrays.asList(Role.ROLE_CUSTOMER));
+        User user = new User("john.doe@example.com", "Doe", "John", "Doe ", "123456789", 100.0, 100.0, Arrays.asList(Role.ROLE_CUSTOMER));
         user.setId(userId);
         when(userService.getUserById(userId)).thenReturn(user);
 
@@ -89,7 +75,7 @@ class UserControllerTest {
     void testGetUserByEmail() throws Exception {
         UUID userId = UUID.randomUUID();
         String email = "john.doe@example.com";
-        User user = new User( email, "Doe", "John", "Doe ","123456789" ,100.0, 100.0,Arrays.asList(Role.ROLE_CUSTOMER));
+        User user = new User(email, "Doe", "John", "Doe ", "123456789", 100.0, 100.0, Arrays.asList(Role.ROLE_CUSTOMER));
         user.setId(userId);
         when(userService.getUserByEmail(email)).thenReturn(user);
 
@@ -123,7 +109,7 @@ class UserControllerTest {
         UUID userId = UUID.randomUUID();
         User user = new User("john.doe@example.com", "password", "John", "Doe", "123456789", 100.0, 100.0, Arrays.asList(Role.ROLE_CUSTOMER));
 
-        when(userService.updateUser(userId, user)).thenReturn(user);
+//        when(userService.updateUser(userId, user)).thenReturn(user);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/users/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -132,7 +118,7 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(user.getEmail()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.firstName").value(user.getFirstName()));
 
-        verify(userService, times(1)).updateUser(userId, user);
+//        verify(userService, times(1)).updateUser(userId, user);
         verifyNoMoreInteractions(userService);
     }*/
 

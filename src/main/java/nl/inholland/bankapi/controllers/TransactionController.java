@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @RestController
@@ -23,7 +22,7 @@ public class TransactionController {
     private TransactionService transactionService;
     private BankAccountService bankAccountService;
 
-    public TransactionController(TransactionService transactionService, BankAccountService bankAccountService){
+    public TransactionController(TransactionService transactionService, BankAccountService bankAccountService) {
         this.transactionService = transactionService;
         this.bankAccountService = bankAccountService;
     }
@@ -37,7 +36,7 @@ public class TransactionController {
             @RequestParam(required = false) String accountTo,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-M-d") LocalDate dateFrom,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-M-d") LocalDate dateTo,
-            @RequestParam(required = false) Double amount,@RequestParam(required = false) Double highestAmount,@RequestParam(required = false) Double lowestAmount) {
+            @RequestParam(required = false) Double amount, @RequestParam(required = false) Double highestAmount, @RequestParam(required = false) Double lowestAmount) {
         try {
             LocalDateTime dateTimeFrom = null;
             LocalDateTime dateTimeTo = null;
@@ -68,15 +67,13 @@ public class TransactionController {
     }
 
 
-
     @PostMapping
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
     public ResponseEntity createTransaction(@RequestBody Transaction transaction) {
         try {
-            if(isTransactionFieldsValid(transaction)){
+            if (isTransactionFieldsValid(transaction)) {
                 return ResponseEntity.status(200).body(transactionService.addTransaction(transaction));
-            }else
-            {
+            } else {
                 return ResponseEntity.status(400).body("Invalid amount or field.");
             }
 
@@ -87,15 +84,15 @@ public class TransactionController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
-    public ResponseEntity getTransactionById(@PathVariable UUID id){
+    public ResponseEntity getTransactionById(@PathVariable UUID id) {
         return ResponseEntity.ok(transactionService.getTransactionById(id));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
-    public ResponseEntity updateTransaction(@PathVariable UUID id,@RequestBody TransactionDTO transactionDTO) {
+    public ResponseEntity updateTransaction(@PathVariable UUID id, @RequestBody TransactionDTO transactionDTO) {
         try {
-            transactionService.updateTransaction(id,transactionDTO);
+            transactionService.updateTransaction(id, transactionDTO);
             return ResponseEntity.status(204).body(null);
         } catch (Exception e) {
             return this.handleException(e);
@@ -108,7 +105,7 @@ public class TransactionController {
     }
 
     private boolean isTransactionFieldsValid(Transaction transaction) {
-        return (Double)transaction.getAmount()!=null && transaction.getAmount() > 0 && transaction.getAccountTo() != null
+        return (Double) transaction.getAmount() != null && transaction.getAmount() > 0 && transaction.getAccountTo() != null
                 && transaction.getAccountFrom() != null;
     }
 }

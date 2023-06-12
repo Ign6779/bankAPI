@@ -3,17 +3,13 @@ package nl.inholland.bankapi.controllers;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.java.Log;
 import nl.inholland.bankapi.models.User;
+import nl.inholland.bankapi.models.dto.ExceptionDTO;
 import nl.inholland.bankapi.models.dto.UserDTO;
 import nl.inholland.bankapi.services.UserService;
-import nl.inholland.bankapi.models.dto.ExceptionDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.UUID;
 
 @RestController
@@ -21,28 +17,28 @@ import java.util.UUID;
 @Log
 public class UserController {
     private UserService userService;
-    public UserController (UserService userService){
+
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
     // we will need Get Methods -Beth
     @GetMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public ResponseEntity getAllUsers(@RequestParam(required = false , defaultValue = "0") Integer page,
-    @RequestParam(required = false,defaultValue = "100") Integer size,
-    @RequestParam(required = false) Boolean hasAccount){
+    public ResponseEntity getAllUsers(@RequestParam(required = false, defaultValue = "0") Integer page,
+                                      @RequestParam(required = false, defaultValue = "100") Integer size,
+                                      @RequestParam(required = false) Boolean hasAccount) {
         try {
-            return ResponseEntity.ok(userService.getAllUsers( page, size,  hasAccount).stream().map(user -> mapDtoToUser(user)));
-        }
-        catch (Exception e){
-            return  this.handleException(e);
+            return ResponseEntity.ok(userService.getAllUsers(page, size, hasAccount).stream().map(user -> mapDtoToUser(user)));
+        } catch (Exception e) {
+            return this.handleException(e);
         }
     }
 
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
-    public ResponseEntity getUserById(@PathVariable UUID id){
+    public ResponseEntity getUserById(@PathVariable UUID id) {
         try {
             return ResponseEntity.ok(mapDtoToUser(userService.getUserById(id)));
         } catch (EntityNotFoundException enfe) {
@@ -53,7 +49,7 @@ public class UserController {
 
     @GetMapping("/email/{email}")
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
-    public ResponseEntity getUserByEmail(@PathVariable String  email){
+    public ResponseEntity getUserByEmail(@PathVariable String email) {
         try {
             return ResponseEntity.ok(mapDtoToUser(userService.getUserByEmail(email)));
         } catch (EntityNotFoundException enfe) {
@@ -66,10 +62,9 @@ public class UserController {
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity createUser(@RequestBody User user) {
         try {
-            if(isUserFieldsValid(user)){
+            if (isUserFieldsValid(user)) {
                 return ResponseEntity.status(201).body(userService.addUser(user));
-            }else
-            {
+            } else {
                 return ResponseEntity.status(400).body("Required fields are missing.");
             }
         } catch (Exception e) {
@@ -79,7 +74,7 @@ public class UserController {
 
     @PutMapping("/{id}") // edit/update
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'CUSTOMER')")
-    public ResponseEntity updateUser(@PathVariable UUID id,@RequestBody User user) {
+    public ResponseEntity updateUser(@PathVariable UUID id, @RequestBody User user) {
         try {
             return ResponseEntity.status(200).body(userService.updateUser(id, user));
         } catch (Exception e) {

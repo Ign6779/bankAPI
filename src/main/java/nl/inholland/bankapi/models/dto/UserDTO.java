@@ -18,7 +18,7 @@ public class UserDTO {
     private String lastName;
     private String email;
     private List<Role> roles;
-    private  String phone;
+    private String phone;
     private double dayLimit;
     private double transactionLimit;
     private List<BankAccount> bankAccounts;
